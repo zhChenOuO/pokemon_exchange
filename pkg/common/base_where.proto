@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package common;
+option go_package = "gitlab.silkrode.com.tw/golang/gopher/pb/v2/commonpb";
+
+import "google/protobuf/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+option (gogoproto.goproto_registration) = true;
+// Enable custom Size method (Required by Marshal and Unmarshal).
+option (gogoproto.sizer_all) = true;
+// Enable custom Marshal method.
+option (gogoproto.marshaler_all) = true;
+// Enable custom Unmarshal method.
+option (gogoproto.unmarshaler_all) = true;
+
+message BaseWhere {
+    string search_in                        = 1;
+    string keyword                          = 2;
+    google.protobuf.Timestamp created_at_lt = 3 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:created_at_lt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp created_at_lte = 4 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:created_at_lte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp created_at_gt = 5 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:created_at_gt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp created_at_gte = 6 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:created_at_gte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp updated_at_lt = 8 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:updated_at_lt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp updated_at_lte = 9 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:updated_at_lte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp updated_at_gt = 10 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:updated_at_gt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp updated_at_gte = 11 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:updated_at_gte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    repeated int64 ids                      = 12 [(gogoproto.customname) = "IDs"];
+    int64 creator_id                        = 13 [(gogoproto.customname) = "CreatorID"];
+    string creator_name                     = 14;
+    int64 updater_id                        = 15 [(gogoproto.customname) = "UpdaterID"];
+    string updater_name                     = 16;
+    google.protobuf.Timestamp deleted_at_lt = 17 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:deleted_at_lt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp deleted_at_lte = 18 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:deleted_at_lte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp deleted_at_gt = 19 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:deleted_at_gt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp deleted_at_gte = 20 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:deleted_at_gte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp expired_at_gt = 21 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:expired_at_gt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp expired_at_gte = 22 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:expired_at_gte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp expired_at_lt = 23 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:expired_at_lt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp expired_at_lte = 24 [
+        (gogoproto.stdtime)  = true,
+        (gogoproto.nullable) = true,
+        (gogoproto.moretags) = "gorm:\"column:expired_at_lte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp completed_at_lt = 25 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "gorm:\"column:completed_at_lt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp completed_at_lte = 26 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "gorm:\"column:completed_at_lte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp completed_at_gt = 27 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "gorm:\"column:completed_at_gt; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp completed_at_gte = 28 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "gorm:\"column:completed_at_gte; default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp trade_time_gt = 29 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp trade_time_gte = 30 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp trade_time_lt = 31 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "default:DATE('1970-01-01 00:00:00')\""
+    ];
+    google.protobuf.Timestamp trade_time_lte = 32 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime)  = true,
+        (gogoproto.moretags) = "default:DATE('1970-01-01 00:00:00')\""
+    ];
+}
