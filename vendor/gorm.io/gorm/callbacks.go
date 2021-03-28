@@ -72,28 +72,51 @@ func (cs *callbacks) Raw() *processor {
 }
 
 func (p *processor) Execute(db *DB) {
-	curTime := time.Now()
-	stmt := db.Statement
+	var (
+		curTime = time.Now()
+		stmt    = db.Statement
+	)
 
+	// call scopes
+	for len(stmt.scopes) > 0 {
+		scopes := stmt.scopes
+		stmt.scopes = nil
+		for _, scope := range scopes {
+			db = scope(db)
+		}
+	}
+
+	// assign model values
 	if stmt.Model == nil {
 		stmt.Model = stmt.Dest
 	} else if stmt.Dest == nil {
 		stmt.Dest = stmt.Model
 	}
 
+	// parse model values
 	if stmt.Model != nil {
 		if err := stmt.Parse(stmt.Model); err != nil && (!errors.Is(err, schema.ErrUnsupportedDataType) || (stmt.Table == "" && stmt.SQL.Len() == 0)) {
-			db.AddError(err)
+			if errors.Is(err, schema.ErrUnsupportedDataType) && stmt.Table == "" {
+				db.AddError(fmt.Errorf("%w: Table not set, please set it like: db.Model(&user) or db.Table(\"users\")", err))
+			} else {
+				db.AddError(err)
+			}
 		}
 	}
 
+	// assign stmt.ReflectValue
 	if stmt.Dest != nil {
 		stmt.ReflectValue = reflect.ValueOf(stmt.Dest)
 		for stmt.ReflectValue.Kind() == reflect.Ptr {
+			if stmt.ReflectValue.IsNil() && stmt.ReflectValue.CanAddr() {
+				stmt.ReflectValue.Set(reflect.New(stmt.ReflectValue.Type().Elem()))
+				break
+			}
+
 			stmt.ReflectValue = stmt.ReflectValue.Elem()
 		}
 		if !stmt.ReflectValue.IsValid() {
-			db.AddError(fmt.Errorf("invalid value"))
+			db.AddError(ErrInvalidValue)
 		}
 	}
 

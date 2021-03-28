@@ -52,6 +52,7 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -60,8 +61,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	errors "golang.org/x/xerrors"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgtype"
@@ -308,7 +307,7 @@ func (c *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, e
 	case sql.LevelSerializable:
 		pgxOpts.IsoLevel = pgx.Serializable
 	default:
-		return nil, errors.Errorf("unsupported isolation: %v", opts.Isolation)
+		return nil, fmt.Errorf("unsupported isolation: %v", opts.Isolation)
 	}
 
 	if opts.ReadOnly {
@@ -370,7 +369,15 @@ func (c *Conn) Ping(ctx context.Context) error {
 		return driver.ErrBadConn
 	}
 
-	return c.conn.Ping(ctx)
+	err := c.conn.Ping(ctx)
+	if err != nil {
+		// A Ping failure implies some sort of fatal state. The connection is almost certainly already closed by the
+		// failure, but manually close it just to be sure.
+		c.Close()
+		return driver.ErrBadConn
+	}
+
+	return nil
 }
 
 func (c *Conn) CheckNamedValue(*driver.NamedValue) error {
@@ -506,7 +513,7 @@ func (r *Rows) ColumnTypeScanType(index int) reflect.Type {
 
 func (r *Rows) Close() error {
 	r.rows.Close()
-	return nil
+	return r.rows.Err()
 }
 
 func (r *Rows) Next(dest []driver.Value) error {
@@ -771,7 +778,7 @@ func ReleaseConn(db *sql.DB, conn *pgx.Conn) error {
 		fakeTxMutex.Unlock()
 	} else {
 		fakeTxMutex.Unlock()
-		return errors.Errorf("can't release conn that is not acquired")
+		return fmt.Errorf("can't release conn that is not acquired")
 	}
 
 	return tx.Rollback()

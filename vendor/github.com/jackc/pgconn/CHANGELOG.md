@@ -1,3 +1,22 @@
+# 1.8.1 (March 25, 2021)
+
+* Better connection string sanitization (ip.novikov)
+* Use proper pgpass location on Windows (Moshe Katz)
+* Use errors instead of golang.org/x/xerrors
+* Resume fallback on server error in Connect (Andrey Borodin)
+
+# 1.8.0 (December 3, 2020)
+
+* Add StatementErrored method to stmtcache.Cache. This allows the cache to purge invalidated prepared statements. (Ethan Pailes)
+
+# 1.7.2 (November 3, 2020)
+
+* Fix data value slices into work buffer with capacities larger than length.
+
+# 1.7.1 (October 31, 2020)
+
+* Do not asyncClose after receiving FATAL error from PostgreSQL server
+
 # 1.7.0 (September 26, 2020)
 
 * Exec(Params|Prepared) return ResultReader with FieldDescriptions loaded

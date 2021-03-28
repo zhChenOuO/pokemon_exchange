@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Register ...
 func (h *handler) Register(c echo.Context) error {
 	ctx := c.Request().Context()
 
