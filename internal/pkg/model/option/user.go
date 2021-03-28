@@ -7,29 +7,28 @@ import (
 	"gorm.io/gorm"
 )
 
-type CardWhereOption struct {
-	Card       model.Card        `json:"card"`
+type UserWhereOption struct {
+	User       model.User        `json:"user"`
 	Pagination common.Pagination `json:"pagination"`
 	BaseWhere  common.BaseWhere  `json:"base_where"`
 	Sorting    common.Sorting    `json:"sorting"`
 }
 
-func (where *CardWhereOption) Where(db *gorm.DB) *gorm.DB {
-	db = db.Where(where.Card)
+func (where *UserWhereOption) Where(db *gorm.DB) *gorm.DB {
+	db = db.Where(where.User)
 
 	return db
 }
 
-type CardUpdateOption struct {
-	WhereOpts CardWhereOption
-	UpdateCol CardUpdateColumn
+type UserUpdateOption struct {
+	WhereOpts UserWhereOption
+	UpdateCol UserUpdateColumn
 }
 
-type CardUpdateColumn struct{}
+type UserUpdateColumn struct{}
 
-func (opts *CardUpdateOption) Update(db *gorm.DB) *gorm.DB {
+func (opts *UserUpdateOption) Update(db *gorm.DB) *gorm.DB {
 	db = db.Scopes(opts.WhereOpts.Where)
 	db = db.Updates(opts.UpdateCol)
-
 	return db
 }

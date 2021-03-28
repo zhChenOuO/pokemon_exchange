@@ -1,4 +1,4 @@
-package repository
+package card
 
 import (
 	"context"

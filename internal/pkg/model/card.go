@@ -1,12 +1,9 @@
 package model
 
-import "time"
+import "gorm.io/gorm"
 
 // Card ...
 type Card struct {
-	ID        int64
-	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	gorm.Model
+	Name string
 }

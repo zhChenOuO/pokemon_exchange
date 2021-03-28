@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"runtime"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -15,7 +14,7 @@ import (
 type CtxKey string
 
 // AfterCommitCallback ...
-type AfterCommitCallback func()
+type AfterCommitCallback func() error
 
 type contextKey struct {
 	name string
@@ -24,11 +23,20 @@ type contextKey struct {
 const (
 	// CtxKeyAfterCommitCallback 註冊 transaction commit 後要執行的動作的 context key
 	CtxKeyAfterCommitCallback CtxKey = "afterCommit"
+	// DefaultCostMilliSeconds 預設的db預期的執行時間，超過會出警示
+	DefaultCostMilliSeconds int64 = 2000
+
+	// DefaultAfterCommitFuncsCostMilliSeconds 預設的db after commit func預期的執行時間，超過會出警示
+	DefaultAfterCommitFuncsCostMilliSeconds int64 = 2000
 )
 
 // ExecuteTx 執行一個 Database 交易，如果 `fn` 執行過程中遇到失敗，會自動執行 rollback, 如果成功則會自動 commit,
 // 另外需要注意的地方是 db 的 connection 需要用 write 的 connection 來執行 tx
-func ExecuteTx(ctx context.Context, db *gorm.DB, fn func(*gorm.DB) error) error {
+func ExecuteTx(ctx context.Context, db *gorm.DB, exceptCostMilliSeconds int64, fn func(*gorm.DB) error) error {
+	var err error
+	if exceptCostMilliSeconds == 0 {
+		exceptCostMilliSeconds = DefaultCostMilliSeconds
+	}
 	f := GetFrame(1)
 	logger := log.Ctx(ctx).With().
 		Str("caller", fmt.Sprintf("%s:%v1", f.File, f.Line)).
@@ -36,12 +44,20 @@ func ExecuteTx(ctx context.Context, db *gorm.DB, fn func(*gorm.DB) error) error 
 	defer func(now time.Time) {
 		costMilliSeconds := time.Since(now).Milliseconds()
 		logger = logger.With().Int64("cost_milliseconds", costMilliSeconds).Logger()
-		if costMilliSeconds > 2000 {
+		if costMilliSeconds > exceptCostMilliSeconds {
 			logger.Warn().Msgf("db: transaction time too long: %v1 millsSeconds", costMilliSeconds)
+		}
+		if err == nil { // trigger after commit
+			runAfterCommitCallback(logger.WithContext(ctx))
 		}
 	}(time.Now())
 	// Start a transactions.
-	return executeInTx(ctx, db, fn)
+	err = executeInTx(ctx, db, fn)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func executeInTx(ctx context.Context, db *gorm.DB, fn func(*gorm.DB) error) (err error) {
@@ -76,7 +92,84 @@ func executeInTx(ctx context.Context, db *gorm.DB, fn func(*gorm.DB) error) (err
 			log.Ctx(ctx).Error().Msgf("executeInTx failed to commit, start Rollback transaction. error: %+v", err)
 			return commitErr
 		}
-		runAfterCommitCallback(ctx)
+	}
+	panicked = false
+	return err
+}
+
+// ExecuteTxWithSavePoint 支援SavePoint的tx func
+func ExecuteTxWithSavePoint(ctx context.Context, db *gorm.DB, exceptCostMilliSeconds int64, fn func(*gorm.DB) (rollbackToSavepoint string, err error)) error {
+	var err error
+	if exceptCostMilliSeconds == 0 {
+		exceptCostMilliSeconds = DefaultCostMilliSeconds
+	}
+	f := GetFrame(1)
+	logger := log.Ctx(ctx).With().
+		Str("caller", fmt.Sprintf("%s:%v1", f.File, f.Line)).
+		Str("caller_func", fmt.Sprintf("%s", f.Function)).Logger()
+	defer func(now time.Time) {
+		costMilliSeconds := time.Since(now).Milliseconds()
+		logger = logger.With().Int64("cost_milliseconds", costMilliSeconds).Logger()
+		if costMilliSeconds > exceptCostMilliSeconds {
+			logger.Warn().Msgf("db: transaction time too long: %v1 millsSeconds", costMilliSeconds)
+		}
+		if err == nil { // trigger after commit
+			runAfterCommitCallback(logger.WithContext(ctx))
+		}
+	}(time.Now())
+	// Start a transactions which driver support Savepoint.
+	err = executeInTxWithSavePoint(ctx, db, fn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func executeInTxWithSavePoint(ctx context.Context, db *gorm.DB, fn func(*gorm.DB) (rollbackToSavepoint string, txErr error)) (err error) {
+	panicked := true
+	rollbackToSavepoint := ""
+	tx := db.Begin()
+	if tx.Error != nil {
+		return errors.Wrapf(errors.ErrInternalError, "executeInTx Begin error %+v", tx.Error.Error())
+	}
+
+	defer func() {
+		// Make sure to rollback when panic, Block error or Commit error
+		if panicked {
+			err = errors.Wrap(errors.ErrInternalError, "executeInTx occurs panic, start Rollback transaction")
+		} else if err != nil {
+			err = errors.Wrapf(err, "executeInTx occurs error, start Rollback transaction.")
+		}
+
+		if err != nil {
+			log.Ctx(ctx).Error().Msgf("%s", err)
+			if rollbackToSavepoint != "" {
+				rollbackErr := tx.RollbackTo(rollbackToSavepoint).Error
+				if rollbackErr == nil {
+					tx.Commit()
+					return
+				} else if rollbackErr != gorm.ErrUnsupportedDriver {
+					log.Ctx(ctx).Error().Msgf("executeInTx RollbackTo %v transaction then error again! error: %+v ", rollbackToSavepoint, rollbackErr)
+					return
+				}
+				log.Ctx(ctx).Error().Msgf("this driver not support rollback with savepoint. please refine your code. err: %v", rollbackErr)
+			}
+			if rollbackErr := tx.Rollback().Error; rollbackErr != nil {
+				log.Ctx(ctx).Error().Msgf("executeInTx Rollback transaction then error again! error: %+v ", rollbackErr)
+				return
+			}
+
+			return
+		}
+	}()
+
+	rollbackToSavepoint, err = fn(tx)
+
+	if err == nil {
+		if commitErr := tx.Commit().Error; commitErr != nil {
+			log.Ctx(ctx).Error().Msgf("executeInTx failed to commit, start Rollback transaction. error: %+v", err)
+			return commitErr
+		}
 	}
 	panicked = false
 	return err
@@ -89,24 +182,35 @@ func InitAfterTxCommitCallback(ctx context.Context) context.Context {
 }
 
 // AddAfterCommitCallback ...
-func AddAfterCommitCallback(ctx context.Context, fn AfterCommitCallback) context.Context {
+func AddAfterCommitCallback(ctx context.Context, fn AfterCommitCallback) (context.Context, error) {
 	logger := log.Ctx(ctx).With().Logger()
 	if fn == nil {
 		logger.Warn().Msg("AddAfterCommitCallback fn can not be nil")
-		return ctx
+		return ctx, nil
 	}
 	callbacks := ctx.Value(CtxKeyAfterCommitCallback)
+	if callbacks == nil {
+		return ctx, errors.NewWithMessagef(errors.ErrInternalServerError, "AddAfterCommitCallback failed, not set CtxKey")
+	}
 	fns, ok := callbacks.(*[]AfterCommitCallback)
 	if !ok {
 		logger.Warn().Msg("AddAfterCommitCallback convert failed")
-		return ctx
+		return ctx, errors.NewWithMessagef(errors.ErrInternalServerError, "AddAfterCommitCallback convert failed, the callbacks funcs unexpected")
 	}
 	*fns = append(*fns, fn)
-	return context.WithValue(ctx, CtxKeyAfterCommitCallback, fns)
+	return context.WithValue(ctx, CtxKeyAfterCommitCallback, fns), nil
 }
 
 func runAfterCommitCallback(ctx context.Context) {
+	var err error
 	logger := log.Ctx(ctx).With().Logger()
+	defer func(now time.Time) {
+		costMilliSeconds := time.Since(now).Milliseconds()
+		logger = logger.With().Int64("db: runAfterCommitCallback cost_milliseconds", costMilliSeconds).Logger()
+		if costMilliSeconds > DefaultAfterCommitFuncsCostMilliSeconds {
+			logger.Warn().Msgf("db: runAfterCommitCallback too long: %v1 millsSeconds", costMilliSeconds)
+		}
+	}(time.Now())
 	callbacks := ctx.Value(CtxKeyAfterCommitCallback)
 	if callbacks == nil {
 		return
@@ -119,34 +223,9 @@ func runAfterCommitCallback(ctx context.Context) {
 	}
 	for i := range *fns {
 		fn := (*fns)[i]
-		fn()
-	}
-	*fns = []AfterCommitCallback{}
-}
-
-// GetFrame get caller frame
-// example:
-// f := stack.GetFrame(0) // 0: currentFrame
-// fmt.Println(f.File, f.Function, f.Line)
-func GetFrame(skipFrames int) runtime.Frame {
-	// We need the frame at index skipFrames+2, since we never want runtime.Callers and getFrame
-	targetFrameIndex := skipFrames + 2
-
-	// Set size to targetFrameIndex+2 to ensure we have room for one more caller than we need
-	programCounters := make([]uintptr, targetFrameIndex+2)
-	n := runtime.Callers(0, programCounters)
-
-	frame := runtime.Frame{Function: "unknown"}
-	if n > 0 {
-		frames := runtime.CallersFrames(programCounters[:n])
-		for more, frameIndex := true, 0; more && frameIndex <= targetFrameIndex; frameIndex++ {
-			var frameCandidate runtime.Frame
-			frameCandidate, more = frames.Next()
-			if frameIndex == targetFrameIndex {
-				frame = frameCandidate
-			}
+		if err = fn(); err != nil {
+			logger.Error().Msgf("fail to run after commit callback, err: %s", err.Error())
 		}
 	}
-
-	return frame
+	*fns = []AfterCommitCallback{}
 }

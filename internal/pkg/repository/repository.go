@@ -1,33 +1,15 @@
 package repository
 
 import (
-	"pokemon/internal/pkg/iface"
+	"pokemon/internal/pkg/repository/card"
+	"pokemon/internal/pkg/repository/spot_order"
+	"pokemon/internal/pkg/repository/user"
 
-	"gitlab.com/howmay/gopher/db"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
-type repository struct {
-	readDB  *gorm.DB
-	writeDB *gorm.DB
-}
-
-type Params struct {
-	fx.In
-
-	DBConns *db.Connections
-}
-
-var Model = fx.Options(
-	fx.Provide(
-		New,
-	),
+var Module = fx.Options(
+	card.Module,
+	spot_order.Module,
+	user.Module,
 )
-
-func New(p Params) iface.IRepository {
-	return &repository{
-		readDB:  p.DBConns.ReadDB,
-		writeDB: p.DBConns.WriteDB,
-	}
-}

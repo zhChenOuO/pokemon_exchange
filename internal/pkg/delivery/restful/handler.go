@@ -7,16 +7,20 @@ import (
 )
 
 type handler struct {
-	svc iface.IServices
+	userSvc      iface.UserService
+	cardSvc      iface.CardService
+	spotOrderSvc iface.SpotOrderService
 }
 
 type Params struct {
 	fx.In
 
-	ISvc iface.IServices
+	UserSvc      iface.UserService
+	CardSvc      iface.CardService
+	SpotOrderSvc iface.SpotOrderService
 }
 
-var Model = fx.Options(
+var Module = fx.Options(
 	fx.Provide(
 		New,
 	),
@@ -27,6 +31,8 @@ var Model = fx.Options(
 
 func New(p Params) iface.IRestfulHandler {
 	return &handler{
-		svc: p.ISvc,
+		userSvc:      p.UserSvc,
+		spotOrderSvc: p.SpotOrderSvc,
+		cardSvc:      p.CardSvc,
 	}
 }

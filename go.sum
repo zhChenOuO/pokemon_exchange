@@ -326,6 +326,7 @@ github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
 github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
+github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc h1:jUIKcSPO9MoMJBbEoyE/RJoE8vz7Mb8AjvifMMwSyvY=
 github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/shurcooL/httpfs v0.0.0-20171119174359-809beceb2371/go.mod h1:ZY1cvUeJuFPAdZ/B6v7RHavJWZn2YPVFQ1OSXhCGOkg=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
@@ -383,6 +384,10 @@ github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9dec
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 gitlab.com/howmay/gopher v0.0.9 h1:CEZG4vOk18XeOKRemZV2T2hMPq46/K0sUHHNgQp/ZUY=
 gitlab.com/howmay/gopher v0.0.9/go.mod h1:6Fitjamcp+LWdeLMA3+6P8seQ+CpKJJQ1o90A7rkUo4=
+gitlab.com/howmay/gopher v0.0.10 h1:cKCYK3w6iHZKqHX5Z+Hk8fLDiNSr8D3i2EO1bC12hqM=
+gitlab.com/howmay/gopher v0.0.10/go.mod h1:6Fitjamcp+LWdeLMA3+6P8seQ+CpKJJQ1o90A7rkUo4=
+gitlab.com/howmay/gopher v0.0.11 h1:4Llp/4Xf1VPerQ+8IG3k6FxPfqoG1awa0HRGaI8Nw4w=
+gitlab.com/howmay/gopher v0.0.11/go.mod h1:6Fitjamcp+LWdeLMA3+6P8seQ+CpKJJQ1o90A7rkUo4=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
 go.opencensus.io v0.22.0/go.mod h1:+kGneAE2xo2IficOXnaByMWTGM9T73dGwxeWcUqIpI8=

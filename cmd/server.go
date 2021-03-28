@@ -46,9 +46,9 @@ func run(_ *cobra.Command, _ []string) {
 	app := fx.New(
 		fx.Supply(*config),
 		Module,
-		repository.Model,
-		service.Model,
-		restful.Model,
+		service.Module,
+		repository.Module,
+		restful.Module,
 	)
 
 	exitCode := 0

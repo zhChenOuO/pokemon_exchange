@@ -1,30 +1,15 @@
 package service
 
 import (
-	"pokemon/internal/pkg/iface"
+	"pokemon/internal/pkg/service/card"
+	"pokemon/internal/pkg/service/spot_order"
+	"pokemon/internal/pkg/service/user"
 
 	"go.uber.org/fx"
 )
 
-// service ...
-type service struct {
-	repo iface.IRepository
-}
-
-type Params struct {
-	fx.In
-
-	IRepo iface.IRepository
-}
-
-var Model = fx.Options(
-	fx.Provide(
-		New,
-	),
+var Module = fx.Options(
+	card.Module,
+	spot_order.Module,
+	user.Module,
 )
-
-func New(p Params) iface.IServices {
-	return &service{
-		repo: p.IRepo,
-	}
-}
