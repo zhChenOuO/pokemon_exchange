@@ -11,7 +11,7 @@ require (
 	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
-	gitlab.com/howmay/gopher v0.0.11
+	gitlab.com/howmay/gopher v0.0.12
 	go.uber.org/fx v1.13.1
 	gorm.io/gorm v1.20.2
 )

@@ -12,30 +12,30 @@ import (
 	"gorm.io/gorm"
 )
 
-// 自定義的 errors, 我還要定義更多 error \(ˋ皿ˊ)/  <---怪叔叔 ಠ_ಠ
+// 自定義的 errors
 var (
-	// ErrBadRequest                       =  &_error{Code: "400000", Message: http.StatusText(http.StatusBadRequest), Status: http.StatusBadRequest}
-	ErrInvalidInput  = &_error{Code: "400001", Message: "One of the request inputs is not valid.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrInvalidAmount = &_error{Code: "400002", Message: "This amount is not allow ", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrSuccessRate   = &_error{Code: "400003", Message: "This SuccessRate is not allow ", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	// 興業銀行序列號錯誤
-	ErrInvalidSerialCode          = &_error{Code: "400007", Message: "please entry the correct number", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrInvalidQueryParameterValue = &_error{Code: "400009", Message: "One of the request inputs is not valid.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrInvalidHeaderValue         = &_error{Code: "400004", Message: "The value provided for one of the HTTP headers was not in the correct format.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrMissingRequiredHeader      = &_error{Code: "400017", Message: "A required HTTP header was not specified.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrOutOfRangeInput            = &_error{Code: "400020", Message: "something out of range", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrInvalidAppVersion          = &_error{Code: "400030", Message: "Check app version from x-app-version, and the version is invalid", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrInternalDataNotSync        = &_error{Code: "400041", Message: "The specified data not sync in system, please wait a moment.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrFishGeneralError           = &_error{Code: "400042", Message: "fish error", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
-	ErrNotMatchSetting            = &_error{Code: "400087", Message: "The specified data not match setting, please adjust your inputs.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrBadRequest                   = &_error{Code: "400000", Message: http.StatusText(http.StatusBadRequest), Status: http.StatusBadRequest}
+	ErrInvalidInput                 = &_error{Code: "400001", Message: "One of the request inputs is not valid.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrInvalidAmount                = &_error{Code: "400002", Message: "This amount is not allow ", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrSuccessRate                  = &_error{Code: "400003", Message: "This SuccessRate is not allow ", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrInvalidQueryParameterValue   = &_error{Code: "400004", Message: "One of the request inputs is not valid.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrInvalidHeaderValue           = &_error{Code: "400005", Message: "The value provided for one of the HTTP headers was not in the correct format.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrMissingRequiredHeader        = &_error{Code: "400006", Message: "A required HTTP header was not specified.", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrOutOfRangeInput              = &_error{Code: "400007", Message: "something out of range", Status: http.StatusBadRequest, GRPCCode: codes.InvalidArgument}
+	ErrEmailNotFilledIn             = &_error{Code: "400008", Status: http.StatusBadRequest, Message: "email can't be empty"}
+	ErrPhoneAreaCodeNotFilledIn     = &_error{Code: "400009", Status: http.StatusBadRequest, Message: "Phone number area code is not filled in"}
+	ErrPhoneNumberNotFilledIn       = &_error{Code: "400010", Status: http.StatusBadRequest, Message: "Phone number is not filled in"}
+	ErrRegistrationTypeInvalidInput = &_error{Code: "400011", Status: http.StatusBadRequest, Message: "Registration type is not supported"}
+	ErrNameNotFilledIn              = &_error{Code: "400012", Status: http.StatusBadRequest, Message: "Name has not been entered"}
+	ErrPasswordInvalidInput         = &_error{Code: "400013", Status: http.StatusBadRequest, Message: "Password is less than 8 characters"}
+	ErrConfirmPasswordNotFilledIn   = &_error{Code: "400014", Status: http.StatusBadRequest, Message: "Confirm password cannot be empty"}
+	ErrConfirmPasswordIncorrect     = &_error{Code: "400015", Status: http.StatusBadRequest, Message: "Confirm password is incorrect"}
+	ErrEmailAlreadyExists           = &_error{Code: "400016", Status: http.StatusConflict, Message: "Email being used"}
+	ErrPhoneAlreadyExists           = &_error{Code: "400017", Status: http.StatusConflict, Message: "Phone number being used"}
 
 	ErrUnauthorized                = &_error{Code: "401001", Message: http.StatusText(http.StatusUnauthorized), Status: http.StatusUnauthorized, GRPCCode: codes.Unauthenticated}
 	ErrInvalidAuthenticationInfo   = &_error{Code: "401001", Message: "The authentication information was not provided in the correct format. Verify the value of Authorization header.", Status: http.StatusUnauthorized, GRPCCode: codes.Unauthenticated}
 	ErrUsernameOrPasswordIncorrect = &_error{Code: "401002", Message: "Username or Password is incorrect.", Status: http.StatusUnauthorized, GRPCCode: codes.Unauthenticated}
-
-	// 支付寶爬蟲錯誤
-	ErrCrawlSecurituCheck = &_error{Code: "401003", Message: "alipay crawler need pass security check", Status: http.StatusUnauthorized, GRPCCode: codes.Unauthenticated}
-	ErrCrawlNeedLogin     = &_error{Code: "401004", Message: "alipay crawler need login again", Status: http.StatusUnauthorized, GRPCCode: codes.Unauthenticated}
 
 	// ErrForbidden                                   =  &_error{Code: "403000", Message: http.StatusText(http.StatusForbidden), Status: http.StatusForbidden}
 	ErrAccountIsDisabled                           = &_error{Code: "403001", Message: "The specified account is disabled.", Status: http.StatusForbidden, GRPCCode: codes.PermissionDenied}
@@ -81,7 +81,7 @@ var (
 type _error struct {
 	Status   int                    `json:"status"`
 	Code     string                 `json:"code"`
-	GRPCCode codes.Code             `json:"grpccode"`
+	GRPCCode codes.Code             `json:"grpc_code"`
 	Message  string                 `json:"message"`
 	Details  map[string]interface{} `json:"details"`
 }

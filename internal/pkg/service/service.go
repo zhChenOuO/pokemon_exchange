@@ -2,6 +2,7 @@ package service
 
 import (
 	"pokemon/internal/pkg/service/card"
+	"pokemon/internal/pkg/service/identity_account"
 	"pokemon/internal/pkg/service/spot_order"
 	"pokemon/internal/pkg/service/user"
 
@@ -9,6 +10,7 @@ import (
 )
 
 var Module = fx.Options(
+	identity_account.Module,
 	card.Module,
 	spot_order.Module,
 	user.Module,

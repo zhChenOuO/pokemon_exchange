@@ -36,3 +36,12 @@ type SpotOrderRepo interface {
 	UpdateSpotOrder(ctx context.Context, tx *gorm.DB, opt option.SpotOrderUpdateOption, scopes ...func(*gorm.DB) *gorm.DB) error
 	DeleteSpotOrder(ctx context.Context, tx *gorm.DB, opt option.SpotOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) error
 }
+
+// IdentityAccountRepository repository介面層
+type IdentityAccountRepository interface {
+	GetIdentityAccount(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountWhereOption, scopes ...func(*gorm.DB) *gorm.DB) (model.IdentityAccount, error)
+	CreateIdentityAccount(ctx context.Context, tx *gorm.DB, data *model.IdentityAccount, scopes ...func(*gorm.DB) *gorm.DB) error
+	ListIdentityAccounts(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountWhereOption, scopes ...func(*gorm.DB) *gorm.DB) ([]model.IdentityAccount, int64, error)
+	UpdateIdentityAccount(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountUpdateOption, scopes ...func(*gorm.DB) *gorm.DB) error
+	DeleteIdentityAccount(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountWhereOption, scopes ...func(*gorm.DB) *gorm.DB) error
+}

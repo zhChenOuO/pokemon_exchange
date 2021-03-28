@@ -16,6 +16,7 @@ import (
 type Configuration struct {
 	fx.Out
 
+	App      *App         `mapstructure:"app"`
 	Log      *zlog.Config `mapstructure:"log"`
 	HTTP     *http.Config `mapstructure:"http"`
 	Database *db.Config   `mapstructure:"database"`

@@ -34,3 +34,12 @@ type SpotOrderService interface {
 	UpdateSpotOrder(ctx context.Context, opt option.SpotOrderUpdateOption) error
 	DeleteSpotOrder(ctx context.Context, opt option.SpotOrderWhereOption) error
 }
+
+// IdentityAccountService service介面層
+type IdentityAccountService interface {
+	GetIdentityAccount(ctx context.Context, opt option.IdentityAccountWhereOption) (model.IdentityAccount, error)
+	CreateIdentityAccount(ctx context.Context, data *model.IdentityAccount) error
+	ListIdentityAccounts(ctx context.Context, opt option.IdentityAccountWhereOption) ([]model.IdentityAccount, int64, error)
+	UpdateIdentityAccount(ctx context.Context, opt option.IdentityAccountUpdateOption) error
+	DeleteIdentityAccount(ctx context.Context, opt option.IdentityAccountWhereOption) error
+}
