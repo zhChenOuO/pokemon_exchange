@@ -6,7 +6,6 @@ import (
 	"pokemon/internal/pkg/model/option"
 	"reflect"
 
-	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/errors"
 	"gorm.io/gorm"
 )
@@ -18,12 +17,9 @@ func (repo *repository) GetCard(ctx context.Context, tx *gorm.DB, opt option.Car
 	}
 	tx = tx.Scopes(scopes...)
 	var card model.Card
-	err := tx.Model(card).Where(opt.Card).Scopes(opt.Where).First(&card).Error
+	err := tx.Model(card).Where(opt.Card).Scopes(opt.Where).Take(&card).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return card, errors.WithStack(errors.ErrResourceNotFound)
-		}
-		return card, errors.Wrapf(errors.ErrInternalError, "database: Card err: %s", err.Error())
+		return card, errors.ConvertPostgresError(err)
 	}
 	return card, nil
 }
@@ -36,10 +32,7 @@ func (repo *repository) CreateCard(ctx context.Context, tx *gorm.DB, data *model
 	tx = tx.Scopes(scopes...)
 	err := tx.Create(data).Error
 	if err != nil {
-		if db.IsDuplicateErr(err) {
-			return errors.Wrapf(errors.ErrResourceAlreadyExists, "database: CreateCard err: %s", err.Error())
-		}
-		return errors.Wrapf(errors.ErrInternalError, "database: CreateCard err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 	return nil
 }
@@ -55,11 +48,11 @@ func (repo *repository) ListCards(ctx context.Context, tx *gorm.DB, opt option.C
 	db := tx.Model(&model.Card{}).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
-		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListCard err: %s", err.Error())
+		return nil, total, errors.ConvertPostgresError(err)
 	}
 	err = db.Scopes(opt.Pagination.LimitAndOffset).Find(&merchants).Error
 	if err != nil {
-		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListCard err: %s", err.Error())
+		return nil, total, errors.ConvertPostgresError(err)
 	}
 	return merchants, total, nil
 }
@@ -75,7 +68,7 @@ func (repo *repository) UpdateCard(ctx context.Context, tx *gorm.DB, opt option.
 	}
 	err := tx.Model(&model.Card{}).Scopes(opt.WhereOpts.Where).Updates(opt.UpdateCol).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: UpdateCard err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 	return nil
 }
@@ -91,7 +84,7 @@ func (repo *repository) DeleteCard(ctx context.Context, tx *gorm.DB, opt option.
 	}
 	err := tx.Scopes(opt.Where).Delete(&model.Card{}).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: DeleteCard err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 	return nil
 }

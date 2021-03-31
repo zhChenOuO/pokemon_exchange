@@ -4,6 +4,8 @@ import (
 	"context"
 	"pokemon/internal/pkg/model"
 	"pokemon/internal/pkg/model/option"
+
+	"gitlab.com/howmay/gopher/errors"
 )
 
 // GetIdentityAccount 取得IdentityAccount的資訊
@@ -37,4 +39,27 @@ func (s *service) UpdateIdentityAccount(ctx context.Context, opt option.Identity
 // DeleteIdentityAccount 刪除IdentityAccount
 func (s *service) DeleteIdentityAccount(ctx context.Context, opt option.IdentityAccountWhereOption) error {
 	return s.repo.DeleteIdentityAccount(ctx, nil, opt)
+}
+
+func (s *service) VerifyIdentityAccount(ctx context.Context, data model.IdentityAccount) (model.IdentityAccount, error) {
+	var (
+		acc model.IdentityAccount
+		err error
+	)
+	acc, err = s.repo.GetIdentityAccount(ctx, nil, option.IdentityAccountWhereOption{
+		IdentityAccount: model.IdentityAccount{
+			Name: data.Name,
+		},
+	})
+
+	switch {
+	case errors.Is(err, errors.ErrResourceNotFound):
+		return acc, errors.ErrUsernameOrPasswordIncorrect
+	case err != nil:
+		return acc, err
+	case acc.Password.String() != data.Password.String():
+		return acc, errors.ErrUsernameOrPasswordIncorrect
+	}
+
+	return acc, nil
 }

@@ -5,6 +5,7 @@ import "github.com/labstack/echo/v4"
 type IRestfulHandler interface {
 	AuthHandler
 	CardHandler
+	SpotOrderHandler
 }
 
 type AuthHandler interface {
@@ -17,4 +18,11 @@ type CardHandler interface {
 	ListCards(ctx echo.Context) error
 	CreateCard(ctx echo.Context) error
 	UpdateCard(ctx echo.Context) error
+}
+
+type SpotOrderHandler interface {
+	GetSpotOrder(ctx echo.Context) error
+	ListSpotOrders(ctx echo.Context) error
+	CreateSpotOrder(ctx echo.Context) error
+	UpdateSpotOrder(ctx echo.Context) error
 }

@@ -1,0 +1,36 @@
+log:
+  app_id: pokemon
+  env: local
+  debug: true
+  local: true
+http:
+  debug: true
+  address: ":8080"
+# grpc:
+#   mode: "debug"
+#   address: ""
+database:
+  read:
+    debug: true
+    host: "localhost"
+    port: 5432
+    username: "postgres"
+    password: "postgres"
+    dbname: "postgres"
+    type: "postgres"
+    search_path: "pokemon"
+    # ssl_enable: true
+  write:
+    debug: true
+    host: "localhost"
+    port: 5432
+    username: "postgres"
+    password: "postgres"
+    dbname: "postgres"
+    type: "postgres"
+    search_path: "pokemon"
+    # ssl_enable: true
+  secrets: "d51d51ub1m9f7dt0eub1m9d51ub1m9f7dt0efd51ub1m9f7dt0e7dt0e"
+app:
+  jwt_secrets: "qmkmxkljhioqhfojvlnjxqhwqoi1p,l3;2k"
+  jwt_expire_sec: 36000000

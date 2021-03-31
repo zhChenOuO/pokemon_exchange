@@ -10,7 +10,7 @@ import (
 
 // Claims ...
 type Claims struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Phone     string    `json:"phone"`
@@ -22,12 +22,16 @@ type Claims struct {
 func GetClaims(c echo.Context) (*Claims, error) {
 	user, ok := c.Get("user").(*jwt.Token)
 	if !ok {
-		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "fail to convert to jwt token")
+		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "need token")
 	}
 	claims, ok := user.Claims.(*Claims)
 	if !ok {
-		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "fail to convert to claims")
+		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "check token is legal")
 	}
 
 	return claims, nil
+}
+
+func (c *Claims) GetID() int64 {
+	return c.ID
 }

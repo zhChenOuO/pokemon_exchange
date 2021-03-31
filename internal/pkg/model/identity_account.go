@@ -12,9 +12,8 @@ import (
 
 // IdentityAccount ...
 type IdentityAccount struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
-	Email     string    `json:"email"`
 	Password  db.Crypto `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -34,7 +33,6 @@ func (identity *IdentityAccount) CreateToken(cfg *configuration.App) (string, er
 	claims := &claims.Claims{
 		ID:    identity.ID,
 		Name:  identity.Name,
-		Email: identity.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().UTC().Add(time.Duration(cfg.JwtExpireSec) * time.Second).Unix(),
 		},

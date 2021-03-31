@@ -17,7 +17,7 @@ func (repo *repository) GetUser(ctx context.Context, tx *gorm.DB, opt option.Use
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
 	var wallet model.User
-	err := tx.Table(wallet.TableName()).Scopes(opt.Where).First(&wallet).Error
+	err := tx.Table(wallet.TableName()).Scopes(opt.Where).Take(&wallet).Error
 	if err != nil {
 		return wallet, errors.ConvertPostgresError(err)
 	}

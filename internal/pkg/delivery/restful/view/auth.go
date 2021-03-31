@@ -20,40 +20,19 @@ const (
 
 // RegisterReq ...
 type RegisterReq struct {
-	RegisterType   RegisterType `json:"register_type"`
-	Name           string       `json:"name"`
-	Email          string       `json:"email"`
-	Phone          string       `json:"phone"`
-	PhoneAreaCode  string       `json:"phone_area_code"`
-	Password       db.Crypto    `json:"password"`
-	VerifyPassword db.Crypto    `json:"verify_password"`
-	AcceptLanguage string       `json:"-"`
+	Name           string `json:"name"`
+	Password       string `json:"password"`
+	VerifyPassword string `json:"verify_password"`
+	AcceptLanguage string `json:"-"`
 }
 
 // BindAndVerify ...
 func (req *RegisterReq) BindAndVerify(c echo.Context) (err error) {
 	if err := c.Bind(req); err != nil {
-		return err
+		return errors.WithStack(errors.ErrInvalidInput)
 	}
 
 	req.AcceptLanguage = c.Request().Header.Get("Accept-Language")
-
-	switch req.RegisterType {
-	case RegisterByEmail:
-		if req.Email == "" {
-			return errors.WithStack(errors.ErrEmailNotFilledIn)
-		}
-	case RegisterByPhone:
-		if req.PhoneAreaCode == "" {
-			return errors.WithStack(errors.ErrPhoneAreaCodeNotFilledIn)
-		}
-
-		if req.Phone == "" {
-			return errors.WithStack(errors.ErrPhoneNumberNotFilledIn)
-		}
-	default:
-		return errors.WithStack(errors.ErrRegistrationTypeInvalidInput)
-	}
 
 	if req.Name == "" {
 		return errors.WithStack(errors.ErrNameNotFilledIn)
@@ -78,13 +57,42 @@ func (req *RegisterReq) BindAndVerify(c echo.Context) (err error) {
 func (req *RegisterReq) ConvertToIdentityAccount() model.IdentityAccount {
 	acc := model.IdentityAccount{
 		Name:     req.Name,
-		Password: req.Password,
-		Email:    req.Email,
+		Password: db.Crypto(req.Password),
 	}
 	return acc
 }
 
 // RegisterResp ...
 type RegisterResp struct {
+	Token string `json:"token"`
+}
+
+type LoginReq struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+func (req *LoginReq) ConvertToIdentityAccount() model.IdentityAccount {
+	return model.IdentityAccount{
+		Name:     req.Name,
+		Password: db.Crypto(req.Password),
+	}
+}
+
+func (req *LoginReq) BindAndVerify(c echo.Context) error {
+	if err := c.Bind(req); err != nil {
+		return errors.WithStack(errors.ErrInvalidInput)
+	}
+
+	if req.Name == "" {
+		return errors.NewWithMessagef(errors.ErrNameNotFilledIn, "name can't be empty")
+	} else if req.Password == "" {
+		return errors.NewWithMessagef(errors.ErrPasswordInvalidInput, "password can't be empty")
+	}
+
+	return nil
+}
+
+type LoginResp struct {
 	Token string `json:"token"`
 }

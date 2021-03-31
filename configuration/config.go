@@ -58,7 +58,7 @@ func New() (*Configuration, error) {
 
 	configPath := viper.GetString("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "./deploy/config"
+		configPath = "./deployment/config"
 	}
 
 	configName := viper.GetString("CONFIG_NAME")

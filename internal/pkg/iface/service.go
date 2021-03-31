@@ -42,4 +42,6 @@ type IdentityAccountService interface {
 	ListIdentityAccounts(ctx context.Context, opt option.IdentityAccountWhereOption) ([]model.IdentityAccount, int64, error)
 	UpdateIdentityAccount(ctx context.Context, opt option.IdentityAccountUpdateOption) error
 	DeleteIdentityAccount(ctx context.Context, opt option.IdentityAccountWhereOption) error
+
+	VerifyIdentityAccount(ctx context.Context, data model.IdentityAccount) (model.IdentityAccount, error)
 }

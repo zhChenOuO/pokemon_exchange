@@ -3,6 +3,7 @@ module pokemon
 go 1.16
 
 require (
+	github.com/cenk/backoff v2.2.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -21,6 +22,8 @@ require (
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
+	github.com/pressly/goose v2.7.0+incompatible
+	github.com/rs/xid v1.3.0
 	github.com/rs/zerolog v1.21.0
 	github.com/shopspring/decimal v1.2.0
 	github.com/spf13/afero v1.6.0 // indirect
@@ -31,7 +34,7 @@ require (
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/ugorji/go v1.2.4 // indirect
-	gitlab.com/howmay/gopher v0.0.12
+	gitlab.com/howmay/gopher v0.0.14
 	go.uber.org/fx v1.13.1
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/mod v0.4.2 // indirect

@@ -1,0 +1,152 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PTCG Trader API v1",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Default Server URL"
+    }
+  ],
+  "paths": {
+    "/apis/v1/auth/login": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "登陸",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.LoginReq"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "信箱或密碼為空",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.ErrorResp"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "密碼錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.ErrorResp"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.ErrorResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "註冊"
+        ],
+        "summary": "Login",
+        "description": " 註冊"
+      }
+    },
+    "/apis/v1/auth/register": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "註冊需要欄位",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.RegisterReq"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pokemon.internal.pkg.delivery.restful.view.ErrorResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "註冊"
+        ],
+        "summary": "Register",
+        "description": " 註冊"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "pokemon.internal.pkg.delivery.restful.view.ErrorResp": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "pokemon.internal.pkg.delivery.restful.view.LoginReq": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "pokemon.internal.pkg.delivery.restful.view.RegisterReq": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "verify_password": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "AuthorizationHeader": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Inuput your token"
+      }
+    }
+  },
+  "security": [
+    {
+      "AuthorizationHeader": []
+    }
+  ]
+}

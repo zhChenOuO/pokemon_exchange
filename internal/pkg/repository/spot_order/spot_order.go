@@ -17,7 +17,7 @@ func (repo *repository) GetSpotOrder(ctx context.Context, tx *gorm.DB, opt optio
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
 	var wallet model.SpotOrder
-	err := tx.Table(wallet.TableName()).Scopes(opt.Where).First(&wallet).Error
+	err := tx.Table(wallet.TableName()).Scopes(opt.Where).Take(&wallet).Error
 	if err != nil {
 		return wallet, errors.ConvertPostgresError(err)
 	}
@@ -55,11 +55,11 @@ func (repo *repository) ListSpotOrders(ctx context.Context, tx *gorm.DB, opt opt
 	db := tx.Table(model.SpotOrder{}.TableName()).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
-		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListSpotOrder err: %s", err.Error())
+		return nil, total, errors.ConvertPostgresError(err)
 	}
 	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&wallets).Error
 	if err != nil {
-		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListSpotOrder err: %s", err.Error())
+		return nil, total, errors.ConvertPostgresError(err)
 	}
 	return wallets, total, nil
 }
@@ -75,7 +75,7 @@ func (repo *repository) UpdateSpotOrder(ctx context.Context, tx *gorm.DB, opt op
 	}
 	err := tx.Table(model.SpotOrder{}.TableName()).Scopes(opt.Update).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: UpdateSpotOrder err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 
 	return nil
@@ -92,7 +92,7 @@ func (repo *repository) DeleteSpotOrder(ctx context.Context, tx *gorm.DB, opt op
 	}
 	err := tx.Scopes(opt.Where).Delete(&model.SpotOrder{}).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: DeleteSpotOrder err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 	return nil
 }

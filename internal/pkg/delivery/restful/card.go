@@ -1,19 +1,23 @@
 package restful
 
-import "github.com/labstack/echo/v4"
+import (
+	"net/http"
 
-func (h *handler) GetCard(ctx echo.Context) error {
+	"github.com/labstack/echo/v4"
+)
+
+func (h *handler) GetCard(c echo.Context) error {
 	return nil
 }
 
-func (h *handler) CreateCard(ctx echo.Context) error {
+func (h *handler) CreateCard(c echo.Context) error {
+	return c.NoContent(http.StatusNoContent)
+}
+
+func (h *handler) ListCards(c echo.Context) error {
 	return nil
 }
 
-func (h *handler) ListCards(ctx echo.Context) error {
-	return nil
-}
-
-func (h *handler) UpdateCard(ctx echo.Context) error {
+func (h *handler) UpdateCard(c echo.Context) error {
 	return nil
 }

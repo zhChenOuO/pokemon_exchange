@@ -17,7 +17,7 @@ func (repo *repository) GetIdentityAccount(ctx context.Context, tx *gorm.DB, opt
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
 	var wallet model.IdentityAccount
-	err := tx.Table(wallet.TableName()).Scopes(opt.Where).First(&wallet).Error
+	err := tx.Table(wallet.TableName()).Scopes(opt.Where).Take(&wallet).Error
 	if err != nil {
 		return wallet, errors.ConvertPostgresError(err)
 	}
@@ -59,7 +59,7 @@ func (repo *repository) ListIdentityAccounts(ctx context.Context, tx *gorm.DB, o
 	}
 	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&wallets).Error
 	if err != nil {
-		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListIdentityAccount err: %s", err.Error())
+		return nil, total, errors.ConvertPostgresError(err)
 	}
 	return wallets, total, nil
 }
@@ -75,7 +75,7 @@ func (repo *repository) UpdateIdentityAccount(ctx context.Context, tx *gorm.DB, 
 	}
 	err := tx.Table(model.IdentityAccount{}.TableName()).Scopes(opt.Update).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: UpdateIdentityAccount err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 
 	return nil
@@ -92,7 +92,7 @@ func (repo *repository) DeleteIdentityAccount(ctx context.Context, tx *gorm.DB, 
 	}
 	err := tx.Scopes(opt.Where).Delete(&model.IdentityAccount{}).Error
 	if err != nil {
-		return errors.Wrapf(errors.ErrInternalError, "database: DeleteIdentityAccount err: %s", err.Error())
+		return errors.ConvertPostgresError(err)
 	}
 	return nil
 }

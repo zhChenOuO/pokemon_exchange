@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/jackc/pgconn"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -69,6 +71,7 @@ var (
 	ErrResourceAlreadyExists    = &_error{Code: "409004", Message: "The specified resource already exists.", Status: http.StatusConflict, GRPCCode: codes.AlreadyExists}
 	ErrPhoneVerifiedTimeout     = &_error{Code: "409007", Message: "sms verify time out", Status: http.StatusConflict, GRPCCode: codes.AlreadyExists}
 	ErrCreateRechargeOrderCDing = &_error{Code: "409008", Message: "60秒内只能建立一次充值申请", Status: http.StatusConflict, GRPCCode: codes.AlreadyExists}
+	ErrPostgresLockNotAvailable = &_error{Code: "409009", Message: "lock not available", Status: http.StatusConflict, GRPCCode: codes.AlreadyExists}
 
 	ErrInternalServerError = &_error{Code: "500000", Message: http.StatusText(http.StatusInternalServerError), Status: http.StatusInternalServerError, GRPCCode: codes.Internal}
 	ErrInternalError       = &_error{Code: "500001", Message: "The server encountered an internal error. Please retry the request.", Status: http.StatusInternalServerError, GRPCCode: codes.Internal}
@@ -249,20 +252,6 @@ func switchCode(s *status.Status) error {
 	return WithStack(httperr)
 }
 
-// ConvertPostgresError convert postgres error
-func ConvertPostgresError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return ErrResourceNotFound
-	}
-
-	return errors.WithMessage(ErrInternalError, err.Error())
-
-}
-
 // ConvertMySQLError convert mysql error
 func ConvertMySQLError(err error) error {
 	if err == nil {
@@ -300,4 +289,37 @@ func HTTPConvertToError(b []byte) error {
 		return ErrInternalError
 	}
 	return WithStack(&interErr)
+}
+
+// ConvertPostgresError convert postgres error
+func ConvertPostgresError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	pgErr, ok := err.(*pq.Error)
+	if ok {
+		switch pgErr.Code {
+		case "23505":
+			return ErrResourceAlreadyExists
+		case "55P03":
+			return ErrPostgresLockNotAvailable
+		}
+	}
+
+	if pgErr, ok := err.(*pgconn.PgError); ok {
+		switch pgErr.Code {
+		case "23505":
+			return ErrResourceAlreadyExists
+		case "55P03":
+			return ErrPostgresLockNotAvailable
+		}
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return ErrResourceNotFound
+	}
+
+	return ErrInternalError
+
 }
