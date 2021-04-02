@@ -13,7 +13,7 @@ import (
 
 // Config setting http config
 type Config struct {
-	Debug         bool   `json:"mode"`
+	Mode          string `json:"mode"`
 	Address       string `json:"address"`
 	AppID         string `yaml:"app_id" mapstructure:"app_id"`
 	IsRequestDump bool   `yaml:"is_request_dump" mapstructure:"is_request_dump"`
@@ -31,7 +31,7 @@ func NewEcho(cfg *Config) *echo.Echo {
 
 	e := echo.New()
 
-	if cfg.Debug {
+	if cfg.Mode == "debug" {
 		e.Debug = true
 		e.HideBanner = false
 		e.HidePort = false
@@ -60,13 +60,16 @@ func NewEcho(cfg *Config) *echo.Echo {
 	// 紀錄所有 API 的錯誤
 	e.Use(errors.ErrMiddleware)
 
+	// 註冊基本路由 "/", "/ping"
 	RegisterDefaultRoute(e)
+
 	return e
 }
 
 // StartEcho create new engine for handler to register
 func StartEcho(s *Config, lc fx.Lifecycle) *echo.Echo {
 	e := NewEcho(s)
+
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 			log.Info().Msgf("Starting echo server, listen on %s", s.Address)
@@ -84,6 +87,16 @@ func StartEcho(s *Config, lc fx.Lifecycle) *echo.Echo {
 		},
 	})
 	return e
+}
+
+//StartEchoByArgs ...
+func StartEchoByArgs(mode string, address string, appID string, isRequestDump bool, lc fx.Lifecycle) *echo.Echo {
+	return StartEcho(&Config{
+		Mode:          mode,
+		Address:       address,
+		AppID:         appID,
+		IsRequestDump: isRequestDump,
+	}, lc)
 }
 
 // RegisterDefaultRoute provide default handler

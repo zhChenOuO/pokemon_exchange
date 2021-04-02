@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/delivery/http"
+	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	"go.uber.org/fx"
 )
@@ -16,10 +17,11 @@ import (
 type Configuration struct {
 	fx.Out
 
-	App      *App         `mapstructure:"app"`
-	Log      *zlog.Config `mapstructure:"log"`
-	HTTP     *http.Config `mapstructure:"http"`
-	Database *db.Config   `mapstructure:"database"`
+	App      *App          `mapstructure:"app"`
+	Log      *zlog.Config  `mapstructure:"log"`
+	HTTP     *http.Config  `mapstructure:"http"`
+	Database *db.Config    `mapstructure:"database"`
+	Redis    *redis.Config `mapstructure:"redis"`
 }
 
 // NewInjection 依賴注入

@@ -20,26 +20,26 @@ CREATE TABLE "cards"(
 );
 
 COMMENT ON COLUMN "cards"."name" IS '卡片名稱';
-
 ---
 DROP TABLE IF EXISTS "spot_orders";
 
 CREATE TABLE "spot_orders"(
     "id" serial NOT NULL PRIMARY KEY,
     "uuid" TEXT,
-    "card_id" INT,
-    "user_id" INT,
+    "card_id" BIGINT,
+    "user_id" BIGINT,
+    "status" SMALLINT,
     "type" SMALLINT,
     "trade_side" SMALLINT,
     "expected_amount" decimal,
-    "actually_amount" decimal,
+    "card_quantity" decimal,
     "created_at" timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON COLUMN "spot_orders"."expected_usd" IS '預期金額';
+COMMENT ON COLUMN "spot_orders"."expected_amount" IS '預期金額';
 
-COMMENT ON COLUMN "spot_orders"."actual_usd" IS '實際金額';
+COMMENT ON COLUMN "spot_orders"."card_quantity" IS '卡片數量';
 
 COMMENT ON COLUMN "spot_orders"."trade_side" IS '交易方向, 1:買,2:賣';
 
@@ -53,5 +53,18 @@ CREATE TABLE "users"(
     "created_at" timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+---
+DROP TABLE IF EXISTS "trade_orders";
+
+CREATE TABLE "trade_orders"(
+    "id" serial NOT NULL PRIMARY KEY,
+    "turnover" decimal,
+    "taker_order_id" BIGINT,
+    "maker_order_id" BIGINT,
+    "created_at" timestamptz(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON COLUMN "trade_orders"."turnover" IS '成交金額';
 
 -- +goose Down

@@ -10,7 +10,7 @@ import (
 
 // Claims ...
 type Claims struct {
-	ID        int64     `json:"id"`
+	ID        uint64    `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Phone     string    `json:"phone"`
@@ -32,6 +32,6 @@ func GetClaims(c echo.Context) (*Claims, error) {
 	return claims, nil
 }
 
-func (c *Claims) GetID() int64 {
+func (c *Claims) GetID() uint64 {
 	return c.ID
 }

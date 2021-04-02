@@ -17,7 +17,7 @@ func (repo *repository) GetCard(ctx context.Context, tx *gorm.DB, opt option.Car
 	}
 	tx = tx.Scopes(scopes...)
 	var card model.Card
-	err := tx.Model(card).Where(opt.Card).Scopes(opt.Where).Take(&card).Error
+	err := tx.Table(model.Card{}.TableName()).Scopes(opt.Where).Take(&card).Error
 	if err != nil {
 		return card, errors.ConvertPostgresError(err)
 	}
@@ -45,7 +45,7 @@ func (repo *repository) ListCards(ctx context.Context, tx *gorm.DB, opt option.C
 	tx = tx.Scopes(scopes...)
 	var merchants []model.Card
 	var total int64
-	db := tx.Model(&model.Card{}).Scopes(opt.Where)
+	db := tx.Table(model.Card{}.TableName()).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
 		return nil, total, errors.ConvertPostgresError(err)
@@ -66,7 +66,7 @@ func (repo *repository) UpdateCard(ctx context.Context, tx *gorm.DB, opt option.
 	if reflect.DeepEqual(opt.WhereOpts, option.CardWhereOption{}) {
 		return errors.Wrap(errors.ErrInternalError, "database: UpdateCard err: where condition can't empty")
 	}
-	err := tx.Model(&model.Card{}).Scopes(opt.WhereOpts.Where).Updates(opt.UpdateCol).Error
+	err := tx.Table(model.Card{}.TableName()).Scopes(opt.WhereOpts.Where).Updates(opt.UpdateCol).Error
 	if err != nil {
 		return errors.ConvertPostgresError(err)
 	}

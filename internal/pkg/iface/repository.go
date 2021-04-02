@@ -45,3 +45,11 @@ type IdentityAccountRepository interface {
 	UpdateIdentityAccount(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountUpdateOption, scopes ...func(*gorm.DB) *gorm.DB) error
 	DeleteIdentityAccount(ctx context.Context, tx *gorm.DB, opt option.IdentityAccountWhereOption, scopes ...func(*gorm.DB) *gorm.DB) error
 }
+
+type TradeOrderRepo interface {
+	GetTradeOrder(ctx context.Context, tx *gorm.DB, opt option.TradeOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) (model.TradeOrder, error)
+	CreateTradeOrder(ctx context.Context, tx *gorm.DB, data *model.TradeOrder, scopes ...func(*gorm.DB) *gorm.DB) error
+	ListTradeOrders(ctx context.Context, tx *gorm.DB, opt option.TradeOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) ([]model.TradeOrder, int64, error)
+	UpdateTradeOrder(ctx context.Context, tx *gorm.DB, opt option.TradeOrderUpdateOption, scopes ...func(*gorm.DB) *gorm.DB) error
+	DeleteTradeOrder(ctx context.Context, tx *gorm.DB, opt option.TradeOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) error
+}

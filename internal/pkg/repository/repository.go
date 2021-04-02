@@ -4,6 +4,7 @@ import (
 	"pokemon/internal/pkg/repository/card"
 	"pokemon/internal/pkg/repository/identity_account"
 	"pokemon/internal/pkg/repository/spot_order"
+	"pokemon/internal/pkg/repository/trade_order"
 	"pokemon/internal/pkg/repository/user"
 
 	"go.uber.org/fx"
@@ -14,4 +15,5 @@ var Module = fx.Options(
 	card.Module,
 	spot_order.Module,
 	user.Module,
+	trade_order.Module,
 )

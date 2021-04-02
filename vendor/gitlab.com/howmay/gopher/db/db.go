@@ -16,8 +16,8 @@ type Database struct {
 	Username       string
 	Password       string
 	DBName         string
-	MaxIdleConns   int
-	MaxOpenConns   int
+	MaxIdleConns   int `yaml:"max_idle_conns" mapstructure:"max_idle_conns"`
+	MaxOpenConns   int `yaml:"max_open_conns" mapstructure:"max_open_conns"`
 	MaxLifetimeSec int
 	ReadTimeout    string `yaml:"read_timeout"`
 	WriteTimeout   string `yaml:"write_timeout"`

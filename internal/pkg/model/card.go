@@ -1,9 +1,11 @@
 package model
 
-import "gorm.io/gorm"
-
 // Card ...
 type Card struct {
-	gorm.Model
-	Name string
+	ID   uint64 `gorm:"id"`
+	Name string `gorm:"name"`
+}
+
+func (Card) TableName() string {
+	return "cards"
 }

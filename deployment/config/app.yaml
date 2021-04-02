@@ -4,14 +4,14 @@ log:
   debug: true
   local: true
 http:
-  debug: true
+  debug: false
   address: ":8080"
 # grpc:
 #   mode: "debug"
 #   address: ""
 database:
   read:
-    debug: true
+    debug: false
     host: "localhost"
     port: 5432
     username: "postgres"
@@ -30,7 +30,17 @@ database:
     type: "postgres"
     search_path: "pokemon"
     # ssl_enable: true
+    max_idle_conns: 40
+    max_open_conns: 50
   secrets: "d51d51ub1m9f7dt0eub1m9d51ub1m9f7dt0efd51ub1m9f7dt0e7dt0e"
 app:
   jwt_secrets: "qmkmxkljhioqhfojvlnjxqhwqoi1p,l3;2k"
   jwt_expire_sec: 36000000
+
+redis:
+  cluster_mode: false
+  addresses:
+    - "0.0.0.0:6379"
+  max_retries: 1
+  pool_size_per_node: 2
+  db: 0

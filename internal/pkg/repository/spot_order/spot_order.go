@@ -29,6 +29,11 @@ func (repo *repository) CreateSpotOrder(ctx context.Context, tx *gorm.DB, data *
 	if tx == nil {
 		tx = repo.writeDB
 	}
+
+	if err := data.VerifyCreateSpotOrder(); err != nil {
+		return err
+	}
+
 	tx = tx.WithContext(ctx).Scopes(scopes...)
 	err := tx.Create(data).Error
 	return errors.ConvertPostgresError(err)
@@ -73,7 +78,7 @@ func (repo *repository) UpdateSpotOrder(ctx context.Context, tx *gorm.DB, opt op
 	if reflect.DeepEqual(opt.WhereOpts, option.SpotOrderWhereOption{}) {
 		return errors.Wrap(errors.ErrInternalError, "database: UpdateSpotOrder err: where condition can't empty")
 	}
-	err := tx.Table(model.SpotOrder{}.TableName()).Scopes(opt.Update).Error
+	err := tx.Table(model.SpotOrder{}.TableName()).Scopes(opt.WhereOpts.Where).Updates(opt.UpdateCol).Error
 	if err != nil {
 		return errors.ConvertPostgresError(err)
 	}
