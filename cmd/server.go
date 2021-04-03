@@ -2,19 +2,20 @@ package cmd
 
 import (
 	"context"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"pokemon/configuration"
-	"pokemon/internal/pkg/delivery/restful"
-	"pokemon/internal/pkg/repository"
-	"pokemon/internal/pkg/service"
+	"pokemon/pkg/delivery/restful"
+	"pokemon/pkg/repository"
+	"pokemon/pkg/service"
 	"syscall"
 	"time"
 
 	log "github.com/rs/zerolog/log"
 	cobra "github.com/spf13/cobra"
 	"gitlab.com/howmay/gopher/db"
-	"gitlab.com/howmay/gopher/delivery/http"
+	"gitlab.com/howmay/gopher/echo"
 	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	fx "go.uber.org/fx"
@@ -29,7 +30,7 @@ var ServerCmd = &cobra.Command{
 var Module = fx.Options(
 	fx.Provide(
 		db.InitDatabases,
-		http.StartEcho,
+		echo.StartEcho,
 		redis.InitRedisClient,
 	),
 )

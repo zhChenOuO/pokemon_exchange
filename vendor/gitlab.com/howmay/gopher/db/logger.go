@@ -12,17 +12,16 @@ import (
 
 // Colors
 const (
-	Reset   = "\033[0m"
-	Red     = "\033[31m"
-	Green   = "\033[32m"
-	Yellow  = "\033[33m"
-	Blue    = "\033[34m"
-	Magenta = "\033[35m"
-	Cyan    = "\033[36m"
-	White   = "\033[37m"
-
+	Reset       = "\033[0m"
+	Red         = "\033[31m"
+	Green       = "\033[32m"
+	Yellow      = "\033[33m"
+	Blue        = "\033[34m"
+	Magenta     = "\033[35m"
+	Cyan        = "\033[36m"
+	White       = "\033[37m"
+	BlueBold    = "\033[34;1m"
 	MagentaBold = "\033[35;1m"
-	CyanBold    = "\033[36;1m"
 	RedBold     = "\033[31;1m"
 	YellowBold  = "\033[33;1m"
 )
@@ -38,21 +37,21 @@ type gormLogger struct {
 // NewLogger for gorm log use zerolog print
 func NewLogger(config logger.Config) logger.Interface {
 	var (
-		infoStr      = "%s\n[info] "
-		warnStr      = "%s\n[warn] "
-		errStr       = "%s\n[error] "
-		traceStr     = "%s\n[%v]\n%s\n[rows:%d]"
-		traceWarnStr = "%s\n[%v]\n%s\n[rows:%d]"
-		traceErrStr  = "%s%s\n[%v]\n%s\n[rows:%d]"
+		infoStr      = "%s\n" + "[info] "
+		warnStr      = "%s\n" + "[warn] "
+		errStr       = "%s\n" + "[error] "
+		traceStr     = "%s\n" + "[%.3fms]" + "[rows:%v]" + "\n%s\n"
+		traceWarnStr = "%s" + ", %s\n" + "[%.3fms]" + "[rows:%v]" + "\n%s" + "\n"
+		traceErrStr  = "%s" + ", %s\n" + "[%.3fms]" + "[rows:%v]" + "\n%s\n"
 	)
 
 	if config.Colorful {
 		infoStr = Green + "%s\n" + Reset + Green + "[info] " + Reset
-		warnStr = Blue + "%s\n" + Reset + Magenta + "[warn] " + Reset
+		warnStr = BlueBold + "%s\n" + Reset + Magenta + "[warn] " + Reset
 		errStr = Magenta + "%s\n" + Reset + Red + "[error] " + Reset
-		traceStr = "\n" + Green + "%s\n\n" + CyanBold + "%s\n" + Blue + "[rows:%2d]\n" + Reset + "[%.3f ms]\n" + Reset
-		traceWarnStr = "\n" + Green + "%s\n" + Reset + RedBold + "[%.3f ms]\n " + Yellow + "[rows:%2d]\n" + Magenta + "%s\n" + Reset
-		traceErrStr = "\n" + RedBold + "%s\n " + MagentaBold + "%s\n" + Reset + "%s\n" + Reset + Blue + "[rows:%2d]\n" + Reset + "[%.3f ms]\n" + Reset
+		traceStr = Green + "%s\n" + Reset + Yellow + "[%.3fms] " + BlueBold + "[rows:%v]" + Cyan + " \n%s\n"
+		traceWarnStr = Green + "%s " + Yellow + "%s\n" + Reset + RedBold + "[%.3fms] " + Yellow + "[rows:%v]" + Magenta + " \n%s" + Reset + "\n"
+		traceErrStr = RedBold + "%s " + MagentaBold + "%s\n" + Reset + Yellow + "[%.3fms] " + BlueBold + "[rows:%v]" + Reset + "\n%s\n"
 	}
 
 	l := &gormLogger{
@@ -79,13 +78,13 @@ func (g *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
 
 //Info ...
 func (g gormLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	requestID := ctxutil.FromContext(ctx)
-	currentLogger := log.With().Fields(map[string]interface{}{
-		"request_id": requestID,
-		"db_log":     true,
-	}).Logger()
-
 	if g.LogLevel >= logger.Info {
+		requestID := ctxutil.FromContext(ctx)
+		currentLogger := log.With().Fields(map[string]interface{}{
+			"request_id": requestID,
+			"db_log":     true,
+		}).Logger()
+
 		currentLogger.Info().Msgf(
 			g.infoStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
@@ -93,13 +92,13 @@ func (g gormLogger) Info(ctx context.Context, msg string, data ...interface{}) {
 
 //Warn ....
 func (g gormLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	requestID := ctxutil.FromContext(ctx)
-	currentLogger := log.With().Fields(map[string]interface{}{
-		"request_id": requestID,
-		"db_log":     true,
-	}).Logger()
-
 	if g.LogLevel >= logger.Warn {
+		requestID := ctxutil.FromContext(ctx)
+		currentLogger := log.With().Fields(map[string]interface{}{
+			"request_id": requestID,
+			"db_log":     true,
+		}).Logger()
+
 		currentLogger.Warn().Msgf(
 			g.warnStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
@@ -107,27 +106,26 @@ func (g gormLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
 
 //Error ...
 func (g gormLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	requestID := ctxutil.FromContext(ctx)
-	currentLogger := log.With().Fields(map[string]interface{}{
-		"request_id": requestID,
-		"db_log":     true,
-	}).Logger()
-
 	if g.LogLevel >= logger.Error {
+		requestID := ctxutil.FromContext(ctx)
+		currentLogger := log.With().Fields(map[string]interface{}{
+			"request_id": requestID,
+			"db_log":     true,
+		}).Logger()
+
 		currentLogger.Error().Msgf(g.errStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
 }
 
 //Trace ...
 func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-
-	requestID := ctxutil.FromContext(ctx)
-	currentLogger := log.With().Fields(map[string]interface{}{
-		"request_id": requestID,
-		"db_log":     true,
-	}).Logger()
-
 	if g.LogLevel > 0 {
+		requestID := ctxutil.FromContext(ctx)
+		currentLogger := log.With().Fields(map[string]interface{}{
+			"request_id": requestID,
+			"db_log":     true,
+		}).Logger()
+
 		elapsed := time.Since(begin)
 		switch {
 		case err != nil && g.LogLevel >= logger.Error:

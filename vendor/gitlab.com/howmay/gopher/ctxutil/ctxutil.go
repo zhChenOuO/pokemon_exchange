@@ -2,6 +2,7 @@ package ctxutil
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 )
@@ -9,13 +10,18 @@ import (
 type ctxKey string
 
 const (
-	ctxKeyXRequestID      ctxKey = "x-request-id"
+	// XRequestID request id
+	XRequestID            ctxKey = "x-request-id"
 	metadataXRequestIDKey        = "x-request-id"
 )
 
+func (ctxKey) String() string {
+	return "x-request-id"
+}
+
 // FromContext get x-request-id from context
 func FromContext(ctx context.Context) string {
-	v, ok := ctx.Value(ctxKeyXRequestID).(string)
+	v, ok := ctx.Value(XRequestID).(string)
 	if !ok {
 		return ""
 	}
@@ -24,7 +30,7 @@ func FromContext(ctx context.Context) string {
 
 // ContextWithXRequestID returns a context.Context with given X-Request-Id value.
 func ContextWithXRequestID(ctx context.Context, requestID string) context.Context {
-	return context.WithValue(ctx, ctxKeyXRequestID, requestID)
+	return context.WithValue(ctx, XRequestID, requestID)
 }
 
 // MetadataXRequestID returns a context.Context with given X-Request-Id value.

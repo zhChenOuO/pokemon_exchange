@@ -23,6 +23,7 @@ type Database struct {
 	WriteTimeout   string `yaml:"write_timeout"`
 	SearchPath     string `yaml:"search_path" mapstructure:"search_path"` // pg should setting this value. It will restrict access to db schema.
 	SSLEnable      bool   `yaml:"ssl_enable" mapstructure:"ssl_enable"`   // pg ssl mode
+	WithColor      bool   `yaml:"with_color" mapstructure:"with_color"`
 }
 
 // DatabaseType 類型
@@ -54,7 +55,7 @@ func GetConnectionStr(database *Database) (string, error) {
 			connectionString = fmt.Sprintf("%s search_path=%s", connectionString, database.SearchPath)
 		}
 	default:
-		return "", errors.New("Not support driver")
+		return "", errors.New("not support driver")
 	}
 	return connectionString, nil
 }

@@ -301,25 +301,25 @@ func ConvertPostgresError(err error) error {
 	if ok {
 		switch pgErr.Code {
 		case "23505":
-			return WithStack(ErrResourceAlreadyExists)
+			return ErrResourceAlreadyExists
 		case "55P03":
-			return WithStack(ErrPostgresLockNotAvailable)
+			return ErrPostgresLockNotAvailable
 		}
 	}
 
 	if pgErr, ok := err.(*pgconn.PgError); ok {
 		switch pgErr.Code {
 		case "23505":
-			return WithStack(ErrResourceAlreadyExists)
+			return ErrResourceAlreadyExists
 		case "55P03":
-			return WithStack(ErrPostgresLockNotAvailable)
+			return ErrPostgresLockNotAvailable
 		}
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return WithStack(ErrResourceNotFound)
+		return ErrResourceNotFound
 	}
 
-	return NewWithMessagef(ErrInternalError, "db error: %+v", err)
+	return ErrInternalError
 
 }

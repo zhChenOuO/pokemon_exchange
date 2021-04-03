@@ -1,8 +1,8 @@
 log:
   app_id: pokemon
   env: local
-  debug: true
-  local: true
+  debug: false
+  local: false
 http:
   debug: false
   address: ":8080"
@@ -20,6 +20,7 @@ database:
     type: "postgres"
     search_path: "pokemon"
     # ssl_enable: true
+    with_color: false
   write:
     debug: true
     host: "localhost"
@@ -30,8 +31,9 @@ database:
     type: "postgres"
     search_path: "pokemon"
     # ssl_enable: true
-    max_idle_conns: 40
-    max_open_conns: 50
+    max_idle_conns: 15
+    max_open_conns: 25
+    with_color: false
   secrets: "d51d51ub1m9f7dt0eub1m9d51ub1m9f7dt0efd51ub1m9f7dt0e7dt0e"
 app:
   jwt_secrets: "qmkmxkljhioqhfojvlnjxqhwqoi1p,l3;2k"

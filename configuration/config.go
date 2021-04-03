@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gitlab.com/howmay/gopher/db"
-	"gitlab.com/howmay/gopher/delivery/http"
+	"gitlab.com/howmay/gopher/echo"
 	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	"go.uber.org/fx"
@@ -19,7 +19,7 @@ type Configuration struct {
 
 	App      *App          `mapstructure:"app"`
 	Log      *zlog.Config  `mapstructure:"log"`
-	HTTP     *http.Config  `mapstructure:"http"`
+	HTTP     *echo.Config  `mapstructure:"http"`
 	Database *db.Config    `mapstructure:"database"`
 	Redis    *redis.Config `mapstructure:"redis"`
 }

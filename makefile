@@ -25,3 +25,6 @@ swagger.server:
 
 swagger.copy: 
 	cp ./documents/swagger.json /Users/zh/Documents/github/swagger/swagger-ui/dev-helpers/swagger.json
+
+test.service.create_spot_order:
+	PROJ_DIR=$p LOCAL_TEST=1 go test -benchmem -run=./internal/pkg/service/spot_order -bench Benchmark_service_CreateSpotOrder internal/pkg/service/spot_order
