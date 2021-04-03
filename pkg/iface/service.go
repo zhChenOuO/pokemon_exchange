@@ -45,3 +45,11 @@ type IdentityAccountService interface {
 
 	VerifyIdentityAccount(ctx context.Context, data model.IdentityAccount) (model.IdentityAccount, error)
 }
+
+type IUsecase interface {
+	MatchingUsecase
+}
+
+type MatchingUsecase interface {
+	MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) error
+}

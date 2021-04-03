@@ -33,7 +33,7 @@ func (h *handler) CreateSpotOrder(c echo.Context) error {
 	}
 
 	so := req.ConvertToSpotOrder(claims)
-	if err := h.spotOrderSvc.CreateSpotOrder(ctx, &so); err != nil {
+	if err := h.matchingSvc.MatchingSpotOrder(ctx, &so); err != nil {
 		return err
 	}
 	return nil

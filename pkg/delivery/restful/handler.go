@@ -13,6 +13,7 @@ type handler struct {
 	userSvc      iface.UserService
 	cardSvc      iface.CardService
 	spotOrderSvc iface.SpotOrderService
+	matchingSvc  iface.MatchingUsecase
 }
 
 type Params struct {
@@ -23,6 +24,7 @@ type Params struct {
 	UserSvc      iface.UserService
 	CardSvc      iface.CardService
 	SpotOrderSvc iface.SpotOrderService
+	MatchingSvc  iface.MatchingUsecase
 }
 
 var Module = fx.Options(
@@ -41,5 +43,6 @@ func New(p Params) iface.IRestfulHandler {
 		userSvc:      p.UserSvc,
 		spotOrderSvc: p.SpotOrderSvc,
 		cardSvc:      p.CardSvc,
+		matchingSvc:  p.MatchingSvc,
 	}
 }

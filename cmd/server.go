@@ -6,9 +6,11 @@ import (
 	"os"
 	"os/signal"
 	"pokemon/configuration"
+	"pokemon/internal/etcd"
 	"pokemon/pkg/delivery/restful"
 	"pokemon/pkg/repository"
 	"pokemon/pkg/service"
+	"pokemon/pkg/usecase"
 	"syscall"
 	"time"
 
@@ -32,6 +34,7 @@ var Module = fx.Options(
 		db.InitDatabases,
 		echo.StartEcho,
 		redis.InitRedisClient,
+		etcd.New,
 	),
 )
 
@@ -51,6 +54,7 @@ func run(_ *cobra.Command, _ []string) {
 		Module,
 		service.Module,
 		repository.Module,
+		usecase.Module,
 		restful.Module,
 	)
 

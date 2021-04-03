@@ -41,6 +41,7 @@ export default function() {
 				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImhhcnZleSIsImVtYWlsIjoiIiwicGhvbmUiOiIiLCJleHBpcmVkX2F0IjoiMDAwMS0wMS0wMVQwMDowMDowMFoiLCJleHAiOjE2NTMxNjk1NDV9.Qd5blIl_RzdHE2km7_-2e0ZNX4DXY_Bvow3CSAmH5DM'
 		}
 	});
+	//console.log(res.body)
 	const checkRes = check(res, {
 		'status is 200': (r) => r.status === 200
 	});
