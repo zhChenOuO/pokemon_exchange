@@ -17,6 +17,7 @@ type Config struct {
 	Address       string `json:"address"`
 	AppID         string `yaml:"app_id" mapstructure:"app_id"`
 	IsRequestDump bool   `yaml:"is_request_dump" mapstructure:"is_request_dump"`
+	Withpprof     bool   `yaml:"with_pprof" mapstructure:"with_pprof"`
 }
 
 // NewInjection 注入 config
@@ -49,6 +50,9 @@ func NewEcho(cfg *Config) *echo.Echo {
 	// Request dump
 	if cfg.IsRequestDump {
 		e.Use(middleware.RequestDump())
+	}
+	if cfg.Withpprof {
+		middleware.Addpprof(e)
 	}
 
 	// 處理所有 API 的異常 panic

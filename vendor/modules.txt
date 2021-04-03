@@ -218,7 +218,7 @@ github.com/valyala/fasttemplate
 # github.com/vektah/gqlparser/v2 v2.1.0
 github.com/vektah/gqlparser/v2/ast
 github.com/vektah/gqlparser/v2/gqlerror
-# gitlab.com/howmay/gopher v0.0.17
+# gitlab.com/howmay/gopher v0.0.19
 ## explicit
 gitlab.com/howmay/gopher/ctxutil
 gitlab.com/howmay/gopher/db

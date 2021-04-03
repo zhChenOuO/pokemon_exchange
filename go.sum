@@ -611,6 +611,10 @@ github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9dec
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 gitlab.com/howmay/gopher v0.0.17 h1:ZdTJJUUD+7HpK3EnuGqpixgLD2V3J54rTW2W0yzQeUg=
 gitlab.com/howmay/gopher v0.0.17/go.mod h1:0XNzgGUXzWpfLJ/P7bwYe5vTWVXN4Au/sNZokDsXWxg=
+gitlab.com/howmay/gopher v0.0.18 h1:TJfaRTk7JEo12KSrCTApF3Xe+3luhI9z0hywXcj5W2I=
+gitlab.com/howmay/gopher v0.0.18/go.mod h1:0XNzgGUXzWpfLJ/P7bwYe5vTWVXN4Au/sNZokDsXWxg=
+gitlab.com/howmay/gopher v0.0.19 h1:47TVhAogSQqHTYdkWzIW/NxxHmw1xUcP6d97wueElwk=
+gitlab.com/howmay/gopher v0.0.19/go.mod h1:0XNzgGUXzWpfLJ/P7bwYe5vTWVXN4Au/sNZokDsXWxg=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738/go.mod h1:dnLIgRNXwCJa5e+c6mIZCrds/GIG4ncV9HhK5PX7jPg=

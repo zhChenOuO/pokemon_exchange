@@ -67,7 +67,7 @@ func SetupDatabase(database *Database) (*gorm.DB, error) {
 	logLevel := logger.Silent
 	if database.Debug {
 		logLevel = logger.Info
-		colorful = true
+		colorful = database.WithColor
 	}
 
 	newLogger := NewLogger(logger.Config{

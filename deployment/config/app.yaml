@@ -31,8 +31,8 @@ database:
     type: "postgres"
     search_path: "pokemon"
     # ssl_enable: true
-    max_idle_conns: 15
-    max_open_conns: 25
+    max_idle_conns: 20
+    max_open_conns: 50
     with_color: false
   secrets: "d51d51ub1m9f7dt0eub1m9d51ub1m9f7dt0efd51ub1m9f7dt0e7dt0e"
 app:

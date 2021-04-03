@@ -2,10 +2,12 @@ package db
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"gitlab.com/howmay/gopher/ctxutil"
+	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 )
@@ -130,13 +132,17 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 		switch {
 		case err != nil && g.LogLevel >= logger.Error:
 			sql, rows := fc()
-			currentLogger.Error().Msgf(g.traceErrStr, utils.FileWithLineNum(), err, sql, rows, float64(elapsed.Nanoseconds())/1e6)
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				currentLogger.Warn().Msgf(g.traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			} else {
+				currentLogger.Error().Msgf(g.traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			}
 		case elapsed > g.SlowThreshold && g.SlowThreshold != 0 && g.LogLevel >= logger.Warn:
 			sql, rows := fc()
-			currentLogger.Warn().Msgf(g.traceWarnStr, utils.FileWithLineNum(), sql, rows, float64(elapsed.Nanoseconds())/1e6)
+			currentLogger.Warn().Msgf(g.traceWarnStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		case g.LogLevel >= logger.Info:
 			sql, rows := fc()
-			currentLogger.Info().Msgf(g.traceStr, utils.FileWithLineNum(), sql, rows, float64(elapsed.Nanoseconds())/1e6)
+			currentLogger.Info().Msgf(g.traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		}
 	}
 }
