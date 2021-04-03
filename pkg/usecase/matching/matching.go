@@ -7,8 +7,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"gitlab.com/howmay/gopher/errors"
-	"go.etcd.io/etcd/client/v3/concurrency"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) error {
@@ -33,38 +33,16 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 	opt.Sorting.SortField = "id"
 	opt.Sorting.SortOrder = "ASC"
 
-	// lock, err := s.locker.Obtain(ctx, data.RedisLockKey(), 1000*time.Millisecond, &redislock.Options{
-	// 	RetryStrategy: redislock.LimitRetry(redislock.LinearBackoff(time.Second), 3),
-	// })
-	// if err == redislock.ErrNotObtained {
-	// 	// fmt.Println(errors.New("Could not obtain lock!"))
-	// 	// log.Error().Msgf("could not obtain lock")
-	// 	return errors.Wrap(err, "could not obtain lock")
-	// } else if err != nil {
-	// 	return errors.Wrapf(errors.ErrInternalError, "fail to get lock err: %+v", err)
-	// }
-	// defer lock.Release(ctx)
-
-	lock := concurrency.NewMutex(s.etcdSession, "/"+data.RedisLockKey())
-	if err := lock.TryLock(ctx); err != nil {
-		return errors.Wrapf(err, "Fail to get lock")
-	}
-	defer func() {
-		if err := lock.Unlock(ctx); err != nil {
-			log.Error().Msgf("Fail to unlock. %+v", err)
-		}
-	}()
-
 	txErr := s.GetDB().Transaction(func(tx *gorm.DB) error {
-		// if _, err := s.cardRepo.GetCard(ctx, tx, option.CardWhereOption{
-		// 	Card: model.Card{
-		// 		ID: data.CardID,
-		// 	},
-		// }, func(db *gorm.DB) *gorm.DB {
-		// 	return db.Clauses(clause.Locking{Strength: "UPDATE"})
-		// }); err != nil {
-		// 	return err
-		// }
+		if _, err := s.cardRepo.GetCard(ctx, tx, option.CardWhereOption{
+			Card: model.Card{
+				ID: data.CardID,
+			},
+		}, func(db *gorm.DB) *gorm.DB {
+			return db.Clauses(clause.Locking{Strength: "UPDATE"})
+		}); err != nil {
+			return err
+		}
 
 		makerSO, err := s.repo.GetSpotOrder(ctx, tx, opt)
 		if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {

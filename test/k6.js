@@ -7,7 +7,7 @@ export const requests = new Counter('http_reqs');
 // target is the number of VUs you are aiming for
 export const options = {
 	vus: 50,
-	stages: [ { target: 100, duration: '30s' } ],
+	stages: [ { target: 100, duration: '15s' } ],
 	//thresholds: {
 	//	requests: [ 'count < 100' ]
 	//}

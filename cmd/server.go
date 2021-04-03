@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"pokemon/configuration"
-	"pokemon/internal/etcd"
 	"pokemon/pkg/delivery/restful"
 	"pokemon/pkg/repository"
 	"pokemon/pkg/service"
@@ -34,7 +33,6 @@ var Module = fx.Options(
 		db.InitDatabases,
 		echo.StartEcho,
 		redis.InitRedisClient,
-		etcd.New,
 	),
 )
 
