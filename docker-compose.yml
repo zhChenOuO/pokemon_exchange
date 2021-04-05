@@ -1,0 +1,57 @@
+version: '3.4'
+
+services:
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  pokemon-exchange:
+    build: 
+      context: .
+      dockerfile: ./deployment/docker/Dockerfile
+    ports:
+      - ":8080"
+    depends_on:
+      - postgres
+      - redis
+    entrypoint:
+      - ./main
+      - server
+    volumes:
+      - ./deployment/config:/server/config
+    environment:
+      CONFIG_PATH: /server/config
+      CONFIG_NAME: app_docker.yaml
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.pokemon-exchange.rule=Host(`localhost`)"
+        - "traefik.http.routers.pokemon-exchange.entrypoints=web"
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=1000"
+      - "-c"
+    volumes: 
+      - ./deployment/database/postgres.conf:/etc/postgresql/postgresql.conf
+      - ./test/.data/pg:/var/lib/postgresql/data
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+  redis:
+    image: redis
+    ports:
+      - 6379:6379

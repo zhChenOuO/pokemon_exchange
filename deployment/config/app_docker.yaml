@@ -1,0 +1,49 @@
+log:
+  app_id: pokemon
+  env: local
+  debug: true
+  local: false
+http:
+  debug: false
+  address: "0.0.0.0:8080"
+  with_pprof: true
+# grpc:
+#   mode: "debug"
+#   address: ""
+database:
+  read:
+    debug: false
+    host: "postgres"
+    port: 5432
+    username: "postgres"
+    password: "postgres"
+    dbname: "postgres"
+    type: "postgres"
+    search_path: "pokemon"
+    # ssl_enable: true
+    with_color: false
+  write:
+    debug: false
+    host: "postgres"
+    port: 5432
+    username: "postgres"
+    password: "postgres"
+    dbname: "postgres"
+    type: "postgres"
+    search_path: "pokemon"
+    # ssl_enable: true
+    max_idle_conns: 50
+    max_open_conns: 200
+    with_color: false
+  secrets: "d51d51ub1m9f7dt0eub1m9d51ub1m9f7dt0efd51ub1m9f7dt0e7dt0e"
+app:
+  jwt_secrets: "qmkmxkljhioqhfojvlnjxqhwqoi1p,l3;2k"
+  jwt_expire_sec: 36000000
+
+redis:
+  cluster_mode: false
+  addresses:
+    - "redis:6379"
+  max_retries: 1
+  pool_size_per_node: 2
+  db: 0

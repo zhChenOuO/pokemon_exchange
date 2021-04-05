@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"encoding/json"
-	"pokemon/internal/etcd"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -23,7 +22,6 @@ type Configuration struct {
 	HTTP     *echo.Config  `mapstructure:"http"`
 	Database *db.Config    `mapstructure:"database"`
 	Redis    *redis.Config `mapstructure:"redis"`
-	ETCD     *etcd.Config  `mapstructure:"etcd"`
 }
 
 // NewInjection 依賴注入

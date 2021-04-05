@@ -6,8 +6,8 @@ export const requests = new Counter('http_reqs');
 // you can specify stages of your test (ramp up/down patterns) through the options object
 // target is the number of VUs you are aiming for
 export const options = {
-	vus: 50,
-	stages: [ { target: 100, duration: '15s' } ],
+	vus: 150,
+	stages: [ { target: 200, duration: '30s' } ],
 	//thresholds: {
 	//	requests: [ 'count < 100' ]
 	//}
@@ -34,11 +34,11 @@ export default function() {
 		card_quantity: 1
 	};
 	let data = JSON.stringify(reqBody);
-	const res = http.post('http://0.0.0.0:8080/apis/v1/spotOrder', data, {
+	const res = http.post('http://localhost/apis/v1/spotOrder', data, {
 		headers: {
 			'Content-Type': 'application/json',
 			authorization:
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImhhcnZleSIsImVtYWlsIjoiIiwicGhvbmUiOiIiLCJleHBpcmVkX2F0IjoiMDAwMS0wMS0wMVQwMDowMDowMFoiLCJleHAiOjE2NTMxNjk1NDV9.Qd5blIl_RzdHE2km7_-2e0ZNX4DXY_Bvow3CSAmH5DM'
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImhhcnZleSIsImVtYWlsIjoiIiwicGhvbmUiOiIiLCJleHBpcmVkX2F0IjoiMDAwMS0wMS0wMVQwMDowMDowMFoiLCJleHAiOjE2NTM1MjQwMjJ9.b0bHWRWgGQKITOg0X3Vjuqq3Fh3OmOG9ornf5z_CT3M'
 		}
 	});
 	//console.log(res.body)
