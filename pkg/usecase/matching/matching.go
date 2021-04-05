@@ -61,6 +61,13 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 			log.Error().Msgf("fail to create spot order")
 			return err
 		}
+		for _, v := range s.GetMatchOrder(data) {
+			log.Error().Msgf("%+v", v)
+		}
+		s.PubOrder(data)
+
+		log.Error().Msgf("%+v", s.sellOrder[data.CardID].Keys()...)
+		log.Error().Msgf("%+v", s.sellOrder[data.CardID].Values()...)
 
 		trade.InitTradeOrder(&makerSO, data)
 		if err := s.tradeRepo.CreateTradeOrder(ctx, tx, &trade); err != nil {

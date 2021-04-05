@@ -9,6 +9,7 @@ require (
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/containerd/continuity v0.0.0-20210315143101-93e15499afd5 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/emirpasic/gods v1.12.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.2.0 // indirect

@@ -54,9 +54,9 @@ func (so *SpotOrder) VerifyCreateSpotOrder() error {
 		return errors.WithMessagef(errors.ErrInvalidInput, "card quantity is empty")
 	}
 
-	if !so.CardQuantity.Equal(decimal.NewFromInt(1)) {
-		return errors.WithMessagef(errors.ErrInvalidInput, "card quantity allow 1")
-	}
+	// if !so.CardQuantity.Equal(decimal.NewFromInt(1)) {
+	// 	return errors.WithMessagef(errors.ErrInvalidInput, "card quantity allow 1")
+	// }
 
 	so.UUID = xid.New().String()
 	so.Status = OrderWaitingForMatchmaking
@@ -70,4 +70,30 @@ func (so *SpotOrder) RedisLockKey() string {
 func (so *SpotOrder) SetSuccess(t OrderType) {
 	so.Status = OrderSuccess
 	so.Type = t
+}
+
+func DecimalComparator(a, b interface{}) int {
+	o1 := a.(decimal.Decimal)
+	o2 := b.(decimal.Decimal)
+
+	if o1.GreaterThan(o2) {
+		return 1
+	} else if o1.LessThan(o2) {
+		return -1
+	} else {
+		return 0
+	}
+}
+
+func SpotOrderComparator(a, b interface{}) int {
+	o1 := a.(*SpotOrder)
+	o2 := b.(*SpotOrder)
+
+	if o1.ExpectedAmount.GreaterThan(o2.ExpectedAmount) {
+		return 1
+	} else if o1.ExpectedAmount.LessThan(o2.ExpectedAmount) {
+		return -1
+	} else {
+		return 0
+	}
 }
