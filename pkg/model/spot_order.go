@@ -72,7 +72,7 @@ func (so *SpotOrder) SetSuccess(t OrderType) {
 	so.Type = t
 }
 
-func DecimalComparator(a, b interface{}) int {
+func DecimalASCComparator(a, b interface{}) int {
 	o1 := a.(decimal.Decimal)
 	o2 := b.(decimal.Decimal)
 
@@ -80,6 +80,19 @@ func DecimalComparator(a, b interface{}) int {
 		return 1
 	} else if o1.LessThan(o2) {
 		return -1
+	} else {
+		return 0
+	}
+}
+
+func DecimalDESCComparator(a, b interface{}) int {
+	o1 := a.(decimal.Decimal)
+	o2 := b.(decimal.Decimal)
+
+	if o1.GreaterThan(o2) {
+		return -1
+	} else if o1.LessThan(o2) {
+		return 1
 	} else {
 		return 0
 	}

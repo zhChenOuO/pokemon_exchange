@@ -18,12 +18,12 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 	)
 
 	switch data.TradeSide {
-	case model.SellSide:
-		opt.SpotOrder.TradeSide = model.BuySide
-		opt.ExpectedAmountMoreThan = data.ExpectedAmount
 	case model.BuySide:
 		opt.SpotOrder.TradeSide = model.SellSide
 		opt.ExpectedAmountLessThan = data.ExpectedAmount
+	case model.SellSide:
+		opt.SpotOrder.TradeSide = model.BuySide
+		opt.ExpectedAmountMoreThan = data.ExpectedAmount
 	default:
 		return errors.WithMessagef(errors.ErrInvalidInput, "trade side no support %d", data.TradeSide)
 	}
@@ -65,9 +65,6 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 			log.Error().Msgf("%+v", v)
 		}
 		s.PubOrder(data)
-
-		log.Error().Msgf("%+v", s.sellOrder[data.CardID].Keys()...)
-		log.Error().Msgf("%+v", s.sellOrder[data.CardID].Values()...)
 
 		trade.InitTradeOrder(&makerSO, data)
 		if err := s.tradeRepo.CreateTradeOrder(ctx, tx, &trade); err != nil {
