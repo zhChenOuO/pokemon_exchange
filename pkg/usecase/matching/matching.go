@@ -44,15 +44,13 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 			return err
 		}
 
-		makerSO, err := s.repo.GetSpotOrder(ctx, tx, opt)
-		if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {
-			return err
-		}
-		if makerSO == (model.SpotOrder{}) {
+		makerSOs := s.GetMatchOrder(data)
+		if len(makerSOs) == 0 {
 			if err := s.repo.CreateSpotOrder(ctx, tx, data); err != nil {
 				log.Error().Msgf("fail to create spot order %+v", err)
 				return err
 			}
+			s.PubOrder(data)
 			return nil
 		}
 
@@ -61,30 +59,49 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 			log.Error().Msgf("fail to create spot order")
 			return err
 		}
-		for _, v := range s.GetMatchOrder(data) {
-			log.Error().Msgf("%+v", v)
-		}
-		s.PubOrder(data)
 
-		trade.InitTradeOrder(&makerSO, data)
-		if err := s.tradeRepo.CreateTradeOrder(ctx, tx, &trade); err != nil {
-			log.Error().Msgf("fail to create trade order")
-			return err
+		for _, makerSO := range makerSOs {
+			trade.InitTradeOrder(makerSO, data)
+			if err := s.tradeRepo.CreateTradeOrder(ctx, tx, &trade); err != nil {
+				log.Error().Msgf("fail to create trade order")
+				return err
+			}
+
+			if makerSO.CardQuantity.IsZero() {
+				if err := s.repo.UpdateSpotOrder(ctx, tx, option.SpotOrderUpdateOption{
+					WhereOpts: option.SpotOrderWhereOption{
+						SpotOrder: model.SpotOrder{
+							ID: makerSO.ID,
+						},
+					},
+					UpdateCol: option.SpotOrderUpdateColumn{
+						Status: model.OrderSuccess,
+					},
+				}); err != nil {
+					log.Error().Msgf("fail to update spot order err:%+v", err.Error())
+					return err
+				}
+				s.RemoveOrder(makerSO)
+			} else {
+				s.PubOrder(makerSO)
+			}
 		}
 
-		if err := s.repo.UpdateSpotOrder(ctx, tx, option.SpotOrderUpdateOption{
-			WhereOpts: option.SpotOrderWhereOption{
-				SpotOrder: model.SpotOrder{
-					ID: makerSO.ID,
+		if data.CardQuantity.IsZero() {
+			if err := s.repo.UpdateSpotOrder(ctx, tx, option.SpotOrderUpdateOption{
+				WhereOpts: option.SpotOrderWhereOption{
+					SpotOrder: model.SpotOrder{
+						ID: data.ID,
+					},
 				},
-			},
-			UpdateCol: option.SpotOrderUpdateColumn{
-				Status: model.OrderSuccess,
-				Type:   makerSO.Type,
-			},
-		}); err != nil {
-			log.Error().Msgf("fail to update spot order err:%+v", err.Error())
-			return err
+				UpdateCol: option.SpotOrderUpdateColumn{
+					Status: model.OrderSuccess,
+				},
+			}); err != nil {
+				return err
+			}
+		} else {
+			s.PubOrder(data)
 		}
 
 		return nil

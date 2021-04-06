@@ -25,7 +25,6 @@ type SpotOrder struct {
 	CardID         uint64          `json:"card_id"`
 	UserID         uint64          `json:"user_id"`
 	Status         OrderStatus     `json:"status"`
-	Type           OrderType       `json:"type"`
 	TradeSide      OrderTradeSide  `json:"trade_side"`
 	CardQuantity   decimal.Decimal `json:"card_quantity"`
 	ExpectedAmount decimal.Decimal `json:"expected_amount"`
@@ -69,7 +68,6 @@ func (so *SpotOrder) RedisLockKey() string {
 
 func (so *SpotOrder) SetSuccess(t OrderType) {
 	so.Status = OrderSuccess
-	so.Type = t
 }
 
 func DecimalASCComparator(a, b interface{}) int {

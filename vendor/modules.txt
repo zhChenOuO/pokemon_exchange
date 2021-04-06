@@ -9,9 +9,6 @@ github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/pkg/guid
 # github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5
 github.com/Nvveen/Gotty
-# github.com/bsm/redislock v0.7.0
-## explicit
-github.com/bsm/redislock
 # github.com/cenk/backoff v2.2.1+incompatible
 ## explicit
 github.com/cenk/backoff
@@ -298,6 +295,8 @@ go.uber.org/zap/zapcore
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/pbkdf2
+# golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449
+## explicit
 # golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c
 ## explicit
 golang.org/x/net/context

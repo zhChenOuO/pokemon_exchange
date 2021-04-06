@@ -8,6 +8,7 @@ import (
 
 	"gitlab.com/howmay/gopher/errors"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // GetSpotOrder 取得SpotOrder的資訊
@@ -100,4 +101,28 @@ func (repo *repository) DeleteSpotOrder(ctx context.Context, tx *gorm.DB, opt op
 		return errors.ConvertPostgresError(err)
 	}
 	return nil
+}
+
+func (repo *repository) ListSpotOrdersWithLock(ctx context.Context) ([]model.SpotOrder, error) {
+	var (
+		sos   []model.SpotOrder = make([]model.SpotOrder, 0)
+		txErr error
+	)
+	txErr = repo.writeDB.Transaction(func(tx *gorm.DB) error {
+		var cards []model.Card
+		cardTx := tx.Clauses(clause.Locking{Strength: "UPDATE"})
+		err := cardTx.Table("cards").Find(&cards).Error
+		if err != nil {
+			return err
+		}
+		sos, _, err = repo.ListSpotOrders(ctx, tx, option.SpotOrderWhereOption{})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if txErr != nil {
+		return sos, txErr
+	}
+	return sos, nil
 }

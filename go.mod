@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/Microsoft/go-winio v0.4.16 // indirect
-	github.com/bsm/redislock v0.7.0
 	github.com/cenk/backoff v2.2.1+incompatible
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/containerd/continuity v0.0.0-20210315143101-93e15499afd5 // indirect
@@ -40,6 +39,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.0-alpha.0
 	go.uber.org/fx v1.13.1
 	go.uber.org/multierr v1.6.0 // indirect
+	golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449 // indirect
 	golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c // indirect
 	golang.org/x/sys v0.0.0-20210402192133-700132347e07 // indirect
 	golang.org/x/text v0.3.6 // indirect

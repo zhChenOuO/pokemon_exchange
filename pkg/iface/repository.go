@@ -35,6 +35,8 @@ type SpotOrderRepo interface {
 	ListSpotOrders(ctx context.Context, tx *gorm.DB, opt option.SpotOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) ([]model.SpotOrder, int64, error)
 	UpdateSpotOrder(ctx context.Context, tx *gorm.DB, opt option.SpotOrderUpdateOption, scopes ...func(*gorm.DB) *gorm.DB) error
 	DeleteSpotOrder(ctx context.Context, tx *gorm.DB, opt option.SpotOrderWhereOption, scopes ...func(*gorm.DB) *gorm.DB) error
+
+	ListSpotOrdersWithLock(ctx context.Context) ([]model.SpotOrder, error)
 }
 
 // IdentityAccountRepository repository介面層

@@ -34,7 +34,9 @@ export default function() {
 		card_quantity: 1
 	};
 	let data = JSON.stringify(reqBody);
-	const res = http.post('http://localhost/apis/v1/spotOrder', data, {
+	// let url = 'http://localhost/apis/v1/spotOrder'
+	let url = 'http://0.0.0.0:9090/apis/v1/spotOrder'
+	const res = http.post(url, data, {
 		headers: {
 			'Content-Type': 'application/json',
 			authorization:

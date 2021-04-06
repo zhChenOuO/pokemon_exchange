@@ -24,6 +24,7 @@ type service struct {
 	// locker    *redislock.Client
 	buyOrder  map[uint64]*rbt.Tree
 	sellOrder map[uint64]*rbt.Tree
+	// TODO 好像要加 lock 待測試
 }
 
 type Params struct {
@@ -62,6 +63,15 @@ func New(p Params) (iface.MatchingUsecase, error) {
 		s.buyOrder[cards[i].ID] = rbt.NewWith(model.DecimalDESCComparator)
 	}
 
+	sos, err := p.Repo.ListSpotOrdersWithLock(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range sos {
+		s.PubOrder(&sos[i])
+	}
+
 	return &s, nil
 }
 func (s *service) GetDB() *gorm.DB {
@@ -86,6 +96,21 @@ func (s *service) PubOrder(o *model.SpotOrder) {
 	subTree := rbt.NewWith(utils.UInt64Comparator)
 	subTree.Put(o.ID, o)
 	tree.Put(o.ExpectedAmount, subTree)
+}
+
+func (s *service) RemoveOrder(o *model.SpotOrder) {
+	var tree *rbt.Tree
+	switch o.TradeSide {
+	case model.BuySide:
+		tree = s.buyOrder[o.CardID]
+	case model.SellSide:
+		tree = s.sellOrder[o.CardID]
+	}
+	if v, found := tree.Get(o.ExpectedAmount); found {
+		subTree := v.(*rbt.Tree)
+		subTree.Remove(o.ID)
+		return
+	}
 }
 
 func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
