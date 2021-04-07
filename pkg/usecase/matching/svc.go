@@ -148,8 +148,12 @@ func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
 	var (
 		needQuantity = o.CardQuantity
 	)
-	for _, v := range tree.Keys() {
-		orderBookAmount := v.(decimal.Decimal)
+
+	for i := 0; i < tree.Size(); i++ {
+		l := tree.Left()
+		log.Info().Msg(tree.String())
+		log.Info().Msg(l.String())
+		orderBookAmount := l.Key.(decimal.Decimal)
 		switch o.TradeSide {
 		case model.BuySide:
 			// 買單 , 賣單簿的最低價 小於下單價則略過
@@ -162,14 +166,12 @@ func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
 				return result
 			}
 		}
-
-		subTree, found := tree.Get(v)
-		if !found {
-			log.Error().Msgf("not found key in tree")
-			continue
-		}
-		for _, iKey := range subTree.(*rbt.Tree).Values() {
-			_order := iKey.(*model.SpotOrder)
+		subTree := l.Value.(*rbt.Tree)
+		log.Info().Msgf("subtree \n%s\n", subTree.String())
+		for j := 0; j < subTree.Size(); j++ {
+			idLeft := subTree.Left()
+			defer subTree.Remove(idLeft.Key)
+			_order := idLeft.Value.(*model.SpotOrder)
 			result = append(result, _order)
 			needQuantity = needQuantity.Sub(_order.CardQuantity)
 			if needQuantity.IsNegative() || needQuantity.IsZero() {
@@ -177,5 +179,35 @@ func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
 			}
 		}
 	}
+
+	// for _, v := range tree.Keys() {
+	// 	orderBookAmount := v.(decimal.Decimal)
+	// 	switch o.TradeSide {
+	// 	case model.BuySide:
+	// 		// 買單 , 賣單簿的最低價 小於下單價則略過
+	// 		if o.ExpectedAmount.LessThan(orderBookAmount) {
+	// 			return result
+	// 		}
+	// 	case model.SellSide:
+	// 		// 賣單 , 買單簿的最高價 大於下單價則略過
+	// 		if o.ExpectedAmount.GreaterThan(orderBookAmount) {
+	// 			return result
+	// 		}
+	// 	}
+
+	// 	subTree, found := tree.Get(v)
+	// 	if !found {
+	// 		log.Error().Msgf("not found key in tree")
+	// 		continue
+	// 	}
+	// 	for _, iKey := range subTree.(*rbt.Tree).Values() {
+	// 		_order := iKey.(*model.SpotOrder)
+	// 		result = append(result, _order)
+	// 		needQuantity = needQuantity.Sub(_order.CardQuantity)
+	// 		if needQuantity.IsNegative() || needQuantity.IsZero() {
+	// 			return result
+	// 		}
+	// 	}
+	// }
 	return result
 }
