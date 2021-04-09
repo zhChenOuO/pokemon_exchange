@@ -6,10 +6,10 @@ import (
 	"pokemon/pkg/model/option"
 )
 
-type IServices interface {
-	UserService
-	CardService
-}
+// type IServices interface {
+// 	UserService
+// 	CardService
+// }
 
 type UserService interface {
 	GetUser(ctx context.Context, opt option.UserWhereOption) (model.User, error)

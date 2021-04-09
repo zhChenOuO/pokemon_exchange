@@ -151,8 +151,6 @@ func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
 
 	for i := 0; i < tree.Size(); i++ {
 		l := tree.Left()
-		log.Info().Msg(tree.String())
-		log.Info().Msg(l.String())
 		orderBookAmount := l.Key.(decimal.Decimal)
 		switch o.TradeSide {
 		case model.BuySide:
@@ -167,17 +165,17 @@ func (s *service) GetMatchOrder(o *model.SpotOrder) []*model.SpotOrder {
 			}
 		}
 		subTree := l.Value.(*rbt.Tree)
-		log.Info().Msgf("subtree \n%s\n", subTree.String())
 		for j := 0; j < subTree.Size(); j++ {
 			idLeft := subTree.Left()
-			defer subTree.Remove(idLeft.Key)
 			_order := idLeft.Value.(*model.SpotOrder)
 			result = append(result, _order)
 			needQuantity = needQuantity.Sub(_order.CardQuantity)
 			if needQuantity.IsNegative() || needQuantity.IsZero() {
 				return result
 			}
+			subTree.Remove(idLeft.Key)
 		}
+		tree.Remove(l.Key)
 	}
 
 	// for _, v := range tree.Keys() {
