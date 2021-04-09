@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: ./deployment/docker/Dockerfile
     ports:
-      - ":8080"
+      - 7070:8080
     depends_on:
       - postgres
       - redis
