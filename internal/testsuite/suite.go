@@ -106,10 +106,10 @@ func Initialize(fxOption ...fx.Option) error {
 			log.Error().Msgf("Could not start resource: %s", err)
 			return err
 		}
-		redisPort, _ := strconv.Atoi(suite.redisContainer.GetPort("6379/tcp"))
-		cfg.Redis = &redis.Config{
-			Addresses: []string{fmt.Sprintf("localhost:%d", redisPort)},
-		}
+		// redisPort, _ := strconv.Atoi(suite.redisContainer.GetPort("6379/tcp"))
+		// cfg.Redis = &redis.Config{
+		// 	Addresses: []string{fmt.Sprintf("localhost:%d", redisPort)},
+		// }
 	} else {
 		cfg, err = configuration.New()
 		if err != nil {

@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/echo"
-	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	"go.uber.org/fx"
 )
@@ -21,7 +20,7 @@ type Configuration struct {
 	Log      *zlog.Config  `mapstructure:"log"`
 	HTTP     *echo.Config  `mapstructure:"http"`
 	Database *db.Config    `mapstructure:"database"`
-	Redis    *redis.Config `mapstructure:"redis"`
+	// Redis    *redis.Config `mapstructure:"redis"`
 }
 
 // NewInjection 依賴注入

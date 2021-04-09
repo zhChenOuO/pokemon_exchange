@@ -6,8 +6,8 @@ export const requests = new Counter('http_reqs');
 // you can specify stages of your test (ramp up/down patterns) through the options object
 // target is the number of VUs you are aiming for
 export const options = {
-	vus: 150,
-	stages: [ { target: 200, duration: '30s' } ],
+	vus: 30,
+	stages: [ { target: 30, duration: '10s' } ],
 	//thresholds: {
 	//	requests: [ 'count < 100' ]
 	//}
@@ -34,7 +34,9 @@ export default function() {
 		card_quantity: 1
 	};
 	let data = JSON.stringify(reqBody);
-	const res = http.post('http://localhost/apis/v1/spotOrder', data, {
+	// let url = 'http://localhost/apis/v1/spotOrder'
+	let url = 'http://0.0.0.0:9090/apis/v1/spotOrder'
+	const res = http.post(url, data, {
 		headers: {
 			'Content-Type': 'application/json',
 			authorization:

@@ -9,9 +9,6 @@ github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/pkg/guid
 # github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5
 github.com/Nvveen/Gotty
-# github.com/bsm/redislock v0.7.0
-## explicit
-github.com/bsm/redislock
 # github.com/cenk/backoff v2.2.1+incompatible
 ## explicit
 github.com/cenk/backoff
@@ -36,6 +33,12 @@ github.com/dgryski/go-rendezvous
 github.com/docker/go-connections/nat
 # github.com/docker/go-units v0.4.0
 github.com/docker/go-units
+# github.com/emirpasic/gods v1.12.0
+## explicit
+github.com/emirpasic/gods/containers
+github.com/emirpasic/gods/trees
+github.com/emirpasic/gods/trees/redblacktree
+github.com/emirpasic/gods/utils
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-redis/redis/v8 v8.8.0
@@ -292,6 +295,8 @@ go.uber.org/zap/zapcore
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/pbkdf2
+# golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449
+## explicit
 # golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c
 ## explicit
 golang.org/x/net/context

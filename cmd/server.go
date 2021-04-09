@@ -17,7 +17,6 @@ import (
 	cobra "github.com/spf13/cobra"
 	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/echo"
-	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	fx "go.uber.org/fx"
 )
@@ -32,7 +31,7 @@ var Module = fx.Options(
 	fx.Provide(
 		db.InitDatabases,
 		echo.StartEcho,
-		redis.InitRedisClient,
+		// redis.InitRedisClient,
 	),
 )
 
