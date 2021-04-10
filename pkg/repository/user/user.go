@@ -50,18 +50,18 @@ func (repo *repository) ListUsers(ctx context.Context, tx *gorm.DB, opt option.U
 		tx = repo.readDB
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
-	var wallets []model.User
+	var u []model.User
 	var total int64
 	db := tx.Table(model.User{}.TableName()).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
 		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListUser err: %s", err.Error())
 	}
-	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&wallets).Error
+	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&u).Error
 	if err != nil {
 		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListUser err: %s", err.Error())
 	}
-	return wallets, total, nil
+	return u, total, nil
 }
 
 // UpdateUser 更新User

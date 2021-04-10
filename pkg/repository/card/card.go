@@ -43,18 +43,18 @@ func (repo *repository) ListCards(ctx context.Context, tx *gorm.DB, opt option.C
 		tx = repo.readDB
 	}
 	tx = tx.Scopes(scopes...)
-	var merchants []model.Card
+	var cards []model.Card
 	var total int64
 	db := tx.Table(model.Card{}.TableName()).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
 		return nil, total, errors.ConvertPostgresError(err)
 	}
-	err = db.Scopes(opt.Pagination.LimitAndOffset).Find(&merchants).Error
+	err = db.Scopes(opt.Pagination.LimitAndOffset).Find(&cards).Error
 	if err != nil {
 		return nil, total, errors.ConvertPostgresError(err)
 	}
-	return merchants, total, nil
+	return cards, total, nil
 }
 
 // UpdateCard 更新Card

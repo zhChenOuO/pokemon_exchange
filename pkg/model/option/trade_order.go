@@ -12,11 +12,22 @@ type TradeOrderWhereOption struct {
 	Pagination common.Pagination `json:"pagination"`
 	BaseWhere  common.BaseWhere  `json:"base_where"`
 	Sorting    common.Sorting    `json:"sorting"`
+
+	MakerOrderIDs []uint64 `gorm:"-"`
+	TakerOrderIDs []uint64 `gorm:"-"`
 }
 
 func (where *TradeOrderWhereOption) Where(db *gorm.DB) *gorm.DB {
 	db = db.Where(where.TradeOrder)
-	
+
+	if len(where.MakerOrderIDs) != 0 {
+		db = db.Where("maker_order_id IN (?)", where.MakerOrderIDs)
+	}
+
+	if len(where.TakerOrderIDs) != 0 {
+		db = db.Where("taker_order_id IN (?)", where.TakerOrderIDs)
+	}
+
 	return db
 }
 

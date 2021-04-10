@@ -2,6 +2,7 @@ package matching
 
 import (
 	"context"
+	"pokemon/internal/helper"
 	"pokemon/pkg/iface"
 	"pokemon/pkg/model"
 	"pokemon/pkg/model/option"
@@ -26,8 +27,8 @@ type service struct {
 	buyOrder      map[uint64]*rbt.Tree
 	sellOrderLock *sync.RWMutex
 	sellOrder     map[uint64]*rbt.Tree
+	spotOrderChan map[uint64]chan *model.SpotOrder
 	// locker    *redislock.Client
-
 }
 
 type Params struct {
@@ -57,6 +58,7 @@ func New(p Params) (iface.MatchingUsecase, error) {
 		buyOrder:      make(map[uint64]*rbt.Tree),
 		buyOrderLock:  &sync.RWMutex{},
 		sellOrderLock: &sync.RWMutex{},
+		spotOrderChan: make(map[uint64]chan *model.SpotOrder),
 	}
 	ctx := log.Logger.WithContext(context.Background())
 	cards, _, err := s.cardRepo.ListCards(ctx, nil, option.CardWhereOption{})
@@ -66,6 +68,7 @@ func New(p Params) (iface.MatchingUsecase, error) {
 	for i := range cards {
 		s.sellOrder[cards[i].ID] = rbt.NewWith(model.DecimalASCComparator)
 		s.buyOrder[cards[i].ID] = rbt.NewWith(model.DecimalDESCComparator)
+		s.spotOrderChan[cards[i].ID] = make(chan *model.SpotOrder)
 	}
 
 	sos, err := p.Repo.ListSpotOrdersWithLock(ctx)
@@ -73,9 +76,21 @@ func New(p Params) (iface.MatchingUsecase, error) {
 		return nil, err
 	}
 
-	// TODO 若開放數字不為1時 card_quantity 需要再扣除 trade_order 成交的數量
 	for i := range sos {
 		s.PubOrder(&sos[i])
+	}
+	
+	for i := range cards {
+		go func(cardID uint64) {
+			log.Info().Msgf("Start card id: %d matching", cardID)
+			defer helper.Recover()
+			for {
+				ctx := context.Background()
+				if err := s.AsyncMatchingSpotOrder(ctx, <-s.spotOrderChan[cardID]); err != nil {
+					log.Error().Msgf("fail to async match spot order, err: %s", err.Error())
+				}
+			}
+		}(cards[i].ID)
 	}
 
 	return &s, nil

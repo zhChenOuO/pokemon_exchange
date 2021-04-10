@@ -20,16 +20,16 @@ const (
 
 // SpotOrder ...
 type SpotOrder struct {
-	ID             uint64          `json:"id"`
-	UUID           string          `json:"uuid"`
-	CardID         uint64          `json:"card_id"`
-	UserID         uint64          `json:"user_id"`
-	Status         OrderStatus     `json:"status"`
-	TradeSide      OrderTradeSide  `json:"trade_side"`
-	CardQuantity   decimal.Decimal `json:"card_quantity"`
-	ExpectedAmount decimal.Decimal `json:"expected_amount"`
-	CreatedAt      time.Time       `json:"created_at"`
-	UpdatedAt      time.Time       `json:"updated_at"`
+	ID             uint64          `json:"id" gorm:"id"`
+	UUID           string          `json:"uuid" gorm:"uuid"`
+	CardID         uint64          `json:"card_id" gorm:"card_id"`
+	UserID         uint64          `json:"user_id" gorm:"user_id"`
+	Status         OrderStatus     `json:"status" gorm:"status"`
+	TradeSide      OrderTradeSide  `json:"trade_side" gorm:"trade_side"`
+	CardQuantity   decimal.Decimal `json:"card_quantity" gorm:"card_quantity"`
+	ExpectedAmount decimal.Decimal `json:"expected_amount" gorm:"expected_amount"`
+	CreatedAt      time.Time       `json:"created_at" gorm:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at" gorm:"updated_at"`
 }
 
 func (SpotOrder) TableName() string {
@@ -66,7 +66,7 @@ func (so *SpotOrder) RedisLockKey() string {
 	return fmt.Sprintf("%s:%d", "trade", so.CardID)
 }
 
-func (so *SpotOrder) SetSuccess(t OrderType) {
+func (so *SpotOrder) SetSuccess() {
 	so.Status = OrderSuccess
 }
 

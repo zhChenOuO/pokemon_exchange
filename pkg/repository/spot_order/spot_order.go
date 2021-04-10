@@ -56,18 +56,20 @@ func (repo *repository) ListSpotOrders(ctx context.Context, tx *gorm.DB, opt opt
 		tx = repo.readDB
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
-	var wallets []model.SpotOrder
+	var so []model.SpotOrder
 	var total int64
 	db := tx.Table(model.SpotOrder{}.TableName()).Scopes(opt.Where)
-	err := db.Count(&total).Error
+	if !opt.WithoutCount {
+		err := db.Count(&total).Error
+		if err != nil {
+			return nil, total, errors.ConvertPostgresError(err)
+		}
+	}
+	err := db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&so).Error
 	if err != nil {
 		return nil, total, errors.ConvertPostgresError(err)
 	}
-	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&wallets).Error
-	if err != nil {
-		return nil, total, errors.ConvertPostgresError(err)
-	}
-	return wallets, total, nil
+	return so, total, nil
 }
 
 // UpdateSpotOrder 更新SpotOrder
@@ -115,7 +117,23 @@ func (repo *repository) ListSpotOrdersWithLock(ctx context.Context) ([]model.Spo
 		if err != nil {
 			return err
 		}
-		sos, _, err = repo.ListSpotOrders(ctx, tx, option.SpotOrderWhereOption{})
+		err = repo.readDB.Raw(`
+		SELECT 
+			spot_orders.id AS id,
+			spot_orders.uuid AS uuid,
+			spot_orders.card_id AS card_id,
+			spot_orders.user_id AS user_id,
+			spot_orders.status AS status,
+			spot_orders.trade_side AS trade_side,
+			spot_orders.card_quantity - COALESCE(maker_trade.quantity,0) - COALESCE(taker_trade.quantity,0) AS card_quantity,
+			spot_orders.expected_amount AS expected_amount,
+			spot_orders.created_at AS created_at,
+			spot_orders.updated_at AS updated_at
+		FROM "spot_orders" 
+			LEFT JOIN trade_orders AS maker_trade ON maker_trade.maker_order_id = spot_orders.id 
+			LEFT JOIN trade_orders AS taker_trade ON taker_trade.taker_order_id = spot_orders.id 
+		WHERE "spot_orders"."status" = '2'
+		`).Scan(&sos).Error
 		if err != nil {
 			return err
 		}

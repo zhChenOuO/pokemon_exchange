@@ -50,18 +50,18 @@ func (repo *repository) ListTradeOrders(ctx context.Context, tx *gorm.DB, opt op
 		tx = repo.readDB
 	}
 	tx = tx.WithContext(ctx).Scopes(scopes...)
-	var wallets []model.TradeOrder
+	var to []model.TradeOrder
 	var total int64
 	db := tx.Table(model.TradeOrder{}.TableName()).Scopes(opt.Where)
 	err := db.Count(&total).Error
 	if err != nil {
 		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListTradeOrder err: %s", err.Error())
 	}
-	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&wallets).Error
+	err = db.Scopes(opt.Pagination.LimitAndOffset, opt.Sorting.Sort).Find(&to).Error
 	if err != nil {
 		return nil, total, errors.Wrapf(errors.ErrInternalError, "database: ListTradeOrder err: %s", err.Error())
 	}
-	return wallets, total, nil
+	return to, total, nil
 }
 
 // UpdateTradeOrder 更新TradeOrder

@@ -15,6 +15,7 @@ type SpotOrderWhereOption struct {
 	Sorting                common.Sorting    `json:"sorting"`
 	ExpectedAmountMoreThan decimal.Decimal   `gorm:"-"`
 	ExpectedAmountLessThan decimal.Decimal   `gorm:"-"`
+	WithoutCount           bool              `gorm:"-"`
 }
 
 func (where *SpotOrderWhereOption) Where(db *gorm.DB) *gorm.DB {
