@@ -6,6 +6,7 @@ type IRestfulHandler interface {
 	AuthHandler
 	CardHandler
 	SpotOrderHandler
+	MeHandler
 }
 
 type AuthHandler interface {
@@ -25,4 +26,9 @@ type SpotOrderHandler interface {
 	ListSpotOrders(ctx echo.Context) error
 	CreateSpotOrder(ctx echo.Context) error
 	UpdateSpotOrder(ctx echo.Context) error
+}
+
+type MeHandler interface {
+	ListMySpotOrder(ctx echo.Context) error
+	ListMyTradeOrder(ctx echo.Context) error
 }

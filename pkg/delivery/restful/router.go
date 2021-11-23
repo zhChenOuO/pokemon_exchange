@@ -31,5 +31,7 @@ func setRoutes(e *echo.Echo, cfg *configuration.App, h iface.IRestfulHandler) {
 	card.POST("", h.CreateCard)
 	card.PUT("/:id", h.UpdateCard)
 
+
+
 	setSpotOrderRoutes(rootV1, jwtMiddleware, h)
 }

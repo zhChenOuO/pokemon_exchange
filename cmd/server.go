@@ -17,6 +17,7 @@ import (
 	cobra "github.com/spf13/cobra"
 	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/echo"
+	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	fx "go.uber.org/fx"
 )
@@ -31,7 +32,7 @@ var Module = fx.Options(
 	fx.Provide(
 		db.InitDatabases,
 		echo.StartEcho,
-		// redis.InitRedisClient,
+		redis.InitRedisClient,
 	),
 )
 
@@ -44,7 +45,7 @@ func run(_ *cobra.Command, _ []string) {
 		return
 	}
 
-	zlog.InitV2(config.Log)
+	zlog.New(config.Log)
 
 	app := fx.New(
 		fx.Supply(*config),

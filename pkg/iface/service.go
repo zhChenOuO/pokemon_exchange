@@ -35,6 +35,14 @@ type SpotOrderService interface {
 	DeleteSpotOrder(ctx context.Context, opt option.SpotOrderWhereOption) error
 }
 
+type TradeOrderService interface {
+	GetTradeOrder(ctx context.Context, opt option.TradeOrderWhereOption) (model.TradeOrder, error)
+	CreateTradeOrder(ctx context.Context, data *model.TradeOrder) error
+	ListTradeOrders(ctx context.Context, opt option.TradeOrderWhereOption) ([]model.TradeOrder, int64, error)
+	UpdateTradeOrder(ctx context.Context, opt option.TradeOrderUpdateOption) error
+	DeleteTradeOrder(ctx context.Context, opt option.TradeOrderWhereOption) error
+}
+
 // IdentityAccountService service介面層
 type IdentityAccountService interface {
 	GetIdentityAccount(ctx context.Context, opt option.IdentityAccountWhereOption) (model.IdentityAccount, error)

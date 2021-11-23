@@ -36,9 +36,9 @@ Please design and implement a backend system for an online trading platform of P
 - [v] There are 2 situations to make a trade:
     - [v] When a buy order is sent to the platform, there exists an uncompleted sell order, whose price is the lowest one among all uncompleted sell orders and less than or equal to the price of the buy order. Then, a trade is made at the price of the sell order. Both buy and sell orders are completed. Otherwise, the buy order is uncompleted.
     - [v] When a sell order is sent to the platform, there exists an uncompleted buy order, whose price is the highest one among all uncompleted buy orders and greater than or equal to the price of the sell order. Then, a trade is made at the price of the buy order. Both buy and sell orders are completed. Otherwise, the sell order is uncompleted.
-- Traders can view the status of their latest 50 orders.
-- Traders can view the latest 50 trades on each kind of cards.
-- If the sequence of orders is fixed, the results must be the same no matter how many times you execute the sequence.
+- [v] Traders can view the status of their latest 50 orders.
+- [v] Traders can view the latest 50 trades on each kind of cards.
+- [v] If the sequence of orders is fixed, the results must be the same no matter how many times you execute the sequence.
 ## Basic Requirements:
 - [v] RESTful API
 - [v] Relational database (PostgreSQL, MySQL, ...)

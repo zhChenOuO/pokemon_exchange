@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 	"pokemon/configuration"
-	"pokemon/internal/testsuite"
+	"pokemon/internal/test_fixture"
 
 	log "github.com/rs/zerolog/log"
 	cobra "github.com/spf13/cobra"
@@ -25,9 +25,9 @@ func migrationRun(_ *cobra.Command, _ []string) {
 		return
 	}
 
-	zlog.InitV2(config.Log)
+	zlog.New(config.Log)
 
-	testsuite.Migration(config.Database)
+	test_fixture.Migration(config.Database)
 
 	log.Info().Msgf("finish")
 }

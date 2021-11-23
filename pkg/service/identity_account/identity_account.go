@@ -54,11 +54,11 @@ func (s *service) VerifyIdentityAccount(ctx context.Context, data model.Identity
 
 	switch {
 	case errors.Is(err, errors.ErrResourceNotFound):
-		return acc, errors.ErrUsernameOrPasswordIncorrect
+		return acc, errors.ErrUsernameOrPasswordUnavailable
 	case err != nil:
 		return acc, err
 	case acc.Password.String() != data.Password.String():
-		return acc, errors.ErrUsernameOrPasswordIncorrect
+		return acc, errors.ErrUsernameOrPasswordUnavailable
 	}
 
 	return acc, nil

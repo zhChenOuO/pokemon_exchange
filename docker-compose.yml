@@ -51,7 +51,7 @@ services:
       - ./deployment/database/postgres.conf:/etc/postgresql/postgresql.conf
       - ./test/.data/pg:/var/lib/postgresql/data
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
-  redis:
-    image: redis
-    ports:
-      - 6379:6379
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - 6379:6379

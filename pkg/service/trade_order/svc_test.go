@@ -1,4 +1,4 @@
-package spot_order
+package trade_order
 
 import (
 	"context"
@@ -20,13 +20,11 @@ type Suite struct {
 var suite Suite
 
 func TestMain(m *testing.M) {
-	if err := test_fixture.Initialize(
+	test_fixture.Initialize(
 		fx.Provide(New),
 		repository.Module,
 		fx.Populate(&suite.svc),
-	); err != nil {
-		panic(err)
-	}
+	)
 
 	ctx := log.Logger.WithContext(context.Background())
 	suite.ctx = ctx

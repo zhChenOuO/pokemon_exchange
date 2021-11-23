@@ -19,3 +19,5 @@ deployment/config/app.yaml
 .idea
 
 test/.data
+
+vendor

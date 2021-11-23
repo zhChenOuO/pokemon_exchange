@@ -15,6 +15,10 @@ func setSpotOrderRoutes(group *echo.Group, e echo.MiddlewareFunc, h iface.IRestf
 	spotOrder.GET("/:id", h.GetSpotOrder)
 	spotOrder.POST("", h.CreateSpotOrder)
 	spotOrder.PUT("/:id", h.UpdateSpotOrder)
+
+	me := group.Group("/me", e)
+	me.GET("/spotOrders", h.ListMySpotOrder)
+
 }
 
 func (h *handler) CreateSpotOrder(c echo.Context) error {

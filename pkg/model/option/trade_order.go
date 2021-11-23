@@ -12,11 +12,16 @@ type TradeOrderWhereOption struct {
 	Pagination common.Pagination `json:"pagination"`
 	BaseWhere  common.BaseWhere  `json:"base_where"`
 	Sorting    common.Sorting    `json:"sorting"`
+
+	UserID uint64 `json:"user_id"`
 }
 
 func (where *TradeOrderWhereOption) Where(db *gorm.DB) *gorm.DB {
 	db = db.Where(where.TradeOrder)
-	
+
+	if where.UserID != 0 {
+		db = db.Where("")
+	}
 	return db
 }
 

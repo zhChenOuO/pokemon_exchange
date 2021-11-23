@@ -26,6 +26,13 @@ type RegisterReq struct {
 	AcceptLanguage string `json:"-"`
 }
 
+var (
+	ErrNameNotFilledIn            = errors.NewWithMessage(errors.ErrInvalidInput, "ErrNameNotFilledIn")
+	ErrPasswordInvalidInput       = errors.NewWithMessage(errors.ErrInvalidInput, "ErrPasswordInvalidInput")
+	ErrConfirmPasswordNotFilledIn = errors.NewWithMessage(errors.ErrInvalidInput, "ErrConfirmPasswordNotFilledIn")
+	ErrConfirmPasswordIncorrect   = errors.NewWithMessage(errors.ErrInvalidInput, "ErrConfirmPasswordIncorrect")
+)
+
 // BindAndVerify ...
 func (req *RegisterReq) BindAndVerify(c echo.Context) (err error) {
 	if err := c.Bind(req); err != nil {
@@ -35,19 +42,19 @@ func (req *RegisterReq) BindAndVerify(c echo.Context) (err error) {
 	req.AcceptLanguage = c.Request().Header.Get("Accept-Language")
 
 	if req.Name == "" {
-		return errors.WithStack(errors.ErrNameNotFilledIn)
+		return errors.WithStack(ErrNameNotFilledIn)
 	}
 
 	if len(req.Password) < 8 {
-		return errors.WithStack(errors.ErrPasswordInvalidInput)
+		return errors.WithStack(ErrPasswordInvalidInput)
 	}
 
 	if req.VerifyPassword == "" {
-		return errors.WithStack(errors.ErrConfirmPasswordNotFilledIn)
+		return errors.WithStack(ErrConfirmPasswordNotFilledIn)
 	}
 
 	if req.Password != req.VerifyPassword {
-		return errors.WithStack(errors.ErrConfirmPasswordIncorrect)
+		return errors.WithStack(ErrConfirmPasswordIncorrect)
 	}
 
 	return nil
@@ -85,9 +92,9 @@ func (req *LoginReq) BindAndVerify(c echo.Context) error {
 	}
 
 	if req.Name == "" {
-		return errors.NewWithMessagef(errors.ErrNameNotFilledIn, "name can't be empty")
+		return errors.WithStack(ErrNameNotFilledIn)
 	} else if req.Password == "" {
-		return errors.NewWithMessagef(errors.ErrPasswordInvalidInput, "password can't be empty")
+		return errors.WithStack(ErrPasswordInvalidInput)
 	}
 
 	return nil

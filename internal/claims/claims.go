@@ -22,11 +22,11 @@ type Claims struct {
 func GetClaims(c echo.Context) (*Claims, error) {
 	user, ok := c.Get("user").(*jwt.Token)
 	if !ok {
-		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "need token")
+		return nil, errors.WithMessage(errors.ErrTokenUnavailable, "need token")
 	}
 	claims, ok := user.Claims.(*Claims)
 	if !ok {
-		return nil, errors.WithMessage(errors.ErrAuthenticationFailed, "check token is legal")
+		return nil, errors.WithMessage(errors.ErrInvalidAuthenticationInfo, "check token is legal")
 	}
 
 	return claims, nil
