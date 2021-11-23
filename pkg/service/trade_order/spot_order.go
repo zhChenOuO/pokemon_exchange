@@ -7,27 +7,36 @@ import (
 )
 
 // GetTradeOrder 取得TradeOrder的資訊
-func (s *service) GetTradeOrder(ctx context.Context, opt option.TradeOrderWhereOption) (model.TradeOrder, error) {
-	return s.repo.GetTradeOrder(ctx, nil, opt)
+func (s *service) GetTradeOrder(ctx context.Context, opt *option.TradeOrderWhereOption) (model.TradeOrder, error) {
+	var (
+		result model.TradeOrder
+	)
+	if err := s.repo.Get(ctx, nil, &result, opt); err != nil {
+		return result, err
+	}
+	return result, nil
 }
 
 // CreateTradeOrder 建立TradeOrder
 func (s *service) CreateTradeOrder(ctx context.Context, data *model.TradeOrder) error {
-	return s.repo.CreateTradeOrder(ctx, nil, data)
+	return s.repo.Create(ctx, nil, data)
 }
 
 // ListTradeOrders 列出TradeOrder
-func (s *service) ListTradeOrders(ctx context.Context, opt option.TradeOrderWhereOption) ([]model.TradeOrder, int64, error) {
-	so, total, err := s.repo.ListTradeOrders(ctx, nil, opt)
+func (s *service) ListTradeOrders(ctx context.Context, opt *option.TradeOrderWhereOption) ([]model.TradeOrder, int64, error) {
+	var (
+		results []model.TradeOrder
+	)
+	total, err := s.repo.List(ctx, nil, &results, opt)
 	if err != nil {
 		return nil, 0, err
 	}
-	return so, total, nil
+	return results, total, nil
 }
 
 // UpdateTradeOrder 更新TradeOrder
-func (s *service) UpdateTradeOrder(ctx context.Context, opt option.TradeOrderUpdateOption) error {
-	err := s.repo.UpdateTradeOrder(ctx, nil, opt)
+func (s *service) UpdateTradeOrder(ctx context.Context, opt *option.TradeOrderWhereOption, col *option.TradeOrderUpdateColumn) error {
+	err := s.repo.Update(ctx, nil, opt, col)
 	if err != nil {
 		return err
 	}
@@ -35,6 +44,6 @@ func (s *service) UpdateTradeOrder(ctx context.Context, opt option.TradeOrderUpd
 }
 
 // DeleteTradeOrder 刪除TradeOrder
-func (s *service) DeleteTradeOrder(ctx context.Context, opt option.TradeOrderWhereOption) error {
-	return s.repo.DeleteTradeOrder(ctx, nil, opt)
+func (s *service) DeleteTradeOrder(ctx context.Context, opt *option.TradeOrderWhereOption) error {
+	return s.repo.Delete(ctx, nil, &model.TradeOrder{}, opt)
 }

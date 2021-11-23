@@ -8,13 +8,13 @@ import (
 
 // service ...
 type service struct {
-	repo iface.UserRepo
+	repo iface.IRepository
 }
 
 type Params struct {
 	fx.In
 
-	Repo iface.UserRepo
+	Repo iface.IRepository
 }
 
 var Module = fx.Options(

@@ -6,6 +6,7 @@ import (
 	"pokemon/pkg/model/option"
 
 	"github.com/rs/zerolog/log"
+	"gitlab.com/howmay/gopher/common"
 	"gitlab.com/howmay/gopher/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -31,10 +32,11 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 	opt.SpotOrder.CardID = data.CardID
 	opt.SpotOrder.Status = model.OrderWaitingForMatchmaking
 	opt.Sorting.SortField = "id"
-	opt.Sorting.SortOrder = "ASC"
+	opt.Sorting.Type = common.SortingOrderType_ASC
 
 	txErr := s.GetDB().Transaction(func(tx *gorm.DB) error {
-		if _, err := s.cardRepo.GetCard(ctx, tx, option.CardWhereOption{
+		var card model.Card
+		if err := s.repo.Get(ctx, tx, &card, &option.CardWhereOption{
 			Card: model.Card{
 				ID: data.CardID,
 			},
@@ -46,7 +48,7 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 
 		makerSOs := s.GetMatchOrder(data)
 		if len(makerSOs) == 0 {
-			if err := s.repo.CreateSpotOrder(ctx, tx, data); err != nil {
+			if err := s.repo.Create(ctx, tx, data); err != nil {
 				log.Error().Msgf("fail to create spot order %+v", err)
 				return err
 			}
@@ -55,29 +57,26 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 		}
 
 		data.SetSuccess(model.OrderTypeTaker)
-		if err := s.repo.CreateSpotOrder(ctx, tx, data); err != nil {
+		if err := s.repo.Create(ctx, tx, data); err != nil {
 			log.Error().Msgf("fail to create spot order")
 			return err
 		}
 
 		for _, makerSO := range makerSOs {
 			trade.InitTradeOrder(makerSO, data)
-			if err := s.tradeRepo.CreateTradeOrder(ctx, tx, &trade); err != nil {
+			if err := s.repo.Create(ctx, tx, &trade); err != nil {
 				log.Error().Msgf("fail to create trade order")
 				return err
 			}
 
 			if makerSO.CardQuantity.IsZero() {
-				if err := s.repo.UpdateSpotOrder(ctx, tx, option.SpotOrderUpdateOption{
-					WhereOpts: option.SpotOrderWhereOption{
-						SpotOrder: model.SpotOrder{
-							ID: makerSO.ID,
-						},
-					},
-					UpdateCol: option.SpotOrderUpdateColumn{
+				if err := s.repo.Update(ctx, tx, &option.SpotOrderWhereOption{
+					SpotOrder: model.SpotOrder{
+						ID: makerSO.ID,
+					}},
+					&option.SpotOrderUpdateColumn{
 						Status: model.OrderSuccess,
-					},
-				}); err != nil {
+					}); err != nil {
 					log.Error().Msgf("fail to update spot order err:%+v", err.Error())
 					return err
 				}
@@ -88,16 +87,13 @@ func (s *service) MatchingSpotOrder(ctx context.Context, data *model.SpotOrder) 
 		}
 
 		if data.CardQuantity.IsZero() {
-			if err := s.repo.UpdateSpotOrder(ctx, tx, option.SpotOrderUpdateOption{
-				WhereOpts: option.SpotOrderWhereOption{
-					SpotOrder: model.SpotOrder{
-						ID: data.ID,
-					},
-				},
-				UpdateCol: option.SpotOrderUpdateColumn{
+			if err := s.repo.Update(ctx, tx, &option.SpotOrderWhereOption{
+				SpotOrder: model.SpotOrder{
+					ID: data.ID,
+				}},
+				&option.SpotOrderUpdateColumn{
 					Status: model.OrderSuccess,
-				},
-			}); err != nil {
+				}); err != nil {
 				return err
 			}
 		} else {

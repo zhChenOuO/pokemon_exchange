@@ -1,9 +1,10 @@
 package option
 
 import (
-	"pokemon/internal/common"
 	"pokemon/pkg/model"
+	"reflect"
 
+	"gitlab.com/howmay/gopher/common"
 	"gorm.io/gorm"
 )
 
@@ -22,16 +23,34 @@ func (where *IdentityAccountWhereOption) Where(db *gorm.DB) *gorm.DB {
 	return db
 }
 
-// IdentityAccountUpdateOption ORM更新條件
-type IdentityAccountUpdateOption struct {
-	WhereOpts    IdentityAccountWhereOption
-	UpdateColumn IdentityAccountUpdateColumn
+func (where *IdentityAccountWhereOption) Page(db *gorm.DB) *gorm.DB {
+	return where.Pagination.LimitAndOffset(db)
+}
+
+func (where *IdentityAccountWhereOption) Sort(db *gorm.DB) *gorm.DB {
+	return where.Sorting.Sort(db)
+}
+
+func (where *IdentityAccountWhereOption) IsEmptyWhereOpt() bool {
+	return reflect.DeepEqual(where.IdentityAccount, model.IdentityAccount{})
+}
+
+func (where *IdentityAccountWhereOption) TableName() string {
+	return where.IdentityAccount.TableName()
+}
+
+func (where *IdentityAccountWhereOption) Preload(db *gorm.DB) *gorm.DB {
+	return db
+}
+
+func (where *IdentityAccountWhereOption) WithoutCount() bool {
+	return where.Pagination.WithoutCount
 }
 
 // UpdateIdentityAccountColumn ORM更新欄位
 type IdentityAccountUpdateColumn struct {
 }
 
-func (opts *IdentityAccountUpdateOption) Update(db *gorm.DB) *gorm.DB {
-	return db
+func (cols *IdentityAccountUpdateColumn) Columns() interface{} {
+	return cols
 }

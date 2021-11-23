@@ -3,12 +3,12 @@ package restful
 import (
 	"net/http"
 	"pokemon/internal/claims"
-	"pokemon/internal/common"
 	"pokemon/pkg/delivery/restful/view"
 	"pokemon/pkg/model"
 	"pokemon/pkg/model/option"
 
 	"github.com/labstack/echo/v4"
+	"gitlab.com/howmay/gopher/common"
 )
 
 func (h *handler) ListMySpotOrder(c echo.Context) error {
@@ -31,14 +31,14 @@ func (h *handler) ListMySpotOrder(c echo.Context) error {
 		PerPage: req.PerPage,
 	}
 	page.CheckOrSetDefault(50)
-	spotOrders, total, err := h.spotOrderSvc.ListSpotOrders(ctx, option.SpotOrderWhereOption{
+	spotOrders, total, err := h.spotOrderSvc.ListSpotOrders(ctx, &option.SpotOrderWhereOption{
 		SpotOrder: model.SpotOrder{
 			UserID: claims.ID,
 		},
 		Pagination: page,
 		Sorting: common.Sorting{
 			SortField: "id",
-			SortOrder: "DESC",
+			Type:      common.SortingOrderType_DESC,
 		},
 	})
 	if err != nil {
@@ -72,12 +72,12 @@ func (h *handler) ListMyTradeOrder(c echo.Context) error {
 		PerPage: req.PerPage,
 	}
 	page.CheckOrSetDefault(50)
-	tradeOrders, total, err := h.tradeOrderSvc.ListTradeOrders(ctx, option.TradeOrderWhereOption{
+	tradeOrders, total, err := h.tradeOrderSvc.ListTradeOrders(ctx, &option.TradeOrderWhereOption{
 		UserID:     claims.ID,
 		Pagination: page,
 		Sorting: common.Sorting{
 			SortField: "id",
-			SortOrder: "DESC",
+			Type:      common.SortingOrderType_DESC,
 		},
 	})
 	if err != nil {

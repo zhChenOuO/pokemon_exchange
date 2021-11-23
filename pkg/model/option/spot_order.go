@@ -1,10 +1,11 @@
 package option
 
 import (
-	"pokemon/internal/common"
 	"pokemon/pkg/model"
+	"reflect"
 
 	"github.com/shopspring/decimal"
+	"gitlab.com/howmay/gopher/common"
 	"gorm.io/gorm"
 )
 
@@ -32,9 +33,28 @@ func (where *SpotOrderWhereOption) Where(db *gorm.DB) *gorm.DB {
 	return db
 }
 
-type SpotOrderUpdateOption struct {
-	WhereOpts SpotOrderWhereOption
-	UpdateCol SpotOrderUpdateColumn
+func (where *SpotOrderWhereOption) Page(db *gorm.DB) *gorm.DB {
+	return where.Pagination.LimitAndOffset(db)
+}
+
+func (where *SpotOrderWhereOption) Sort(db *gorm.DB) *gorm.DB {
+	return where.Sorting.Sort(db)
+}
+
+func (where *SpotOrderWhereOption) IsEmptyWhereOpt() bool {
+	return reflect.DeepEqual(where.SpotOrder, model.SpotOrder{})
+}
+
+func (where *SpotOrderWhereOption) TableName() string {
+	return where.SpotOrder.TableName()
+}
+
+func (where *SpotOrderWhereOption) Preload(db *gorm.DB) *gorm.DB {
+	return db
+}
+
+func (where *SpotOrderWhereOption) WithoutCount() bool {
+	return where.Pagination.WithoutCount
 }
 
 type SpotOrderUpdateColumn struct {
@@ -43,8 +63,6 @@ type SpotOrderUpdateColumn struct {
 	ActuallyAmount decimal.Decimal   `json:"actually_amount" gorm:"actually_amount"`
 }
 
-func (opts *SpotOrderUpdateOption) Update(db *gorm.DB) *gorm.DB {
-	db = db.Scopes(opts.WhereOpts.Where)
-	db = db.Updates(opts.UpdateCol)
-	return db
+func (cols *SpotOrderUpdateColumn) Columns() interface{} {
+	return cols
 }

@@ -9,14 +9,14 @@ import (
 
 // service ...
 type service struct {
-	repo iface.SpotOrderRepo
+	repo iface.IRepository
 	db   *gorm.DB
 }
 
 type Params struct {
 	fx.In
 
-	Repo iface.SpotOrderRepo
+	Repo iface.IRepository
 }
 
 var Module = fx.Options(

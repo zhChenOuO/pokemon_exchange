@@ -11,6 +11,7 @@ import (
 	"github.com/emirpasic/gods/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
+	"gitlab.com/howmay/gopher/common"
 	"gitlab.com/howmay/gopher/db"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -18,9 +19,7 @@ import (
 
 // service ...
 type service struct {
-	repo          iface.SpotOrderRepo
-	tradeRepo     iface.TradeOrderRepo
-	cardRepo      iface.CardRepo
+	repo          iface.IRepository
 	db            *gorm.DB
 	buyOrderLock  *sync.RWMutex
 	buyOrder      map[uint64]*rbt.Tree
@@ -33,10 +32,8 @@ type service struct {
 type Params struct {
 	fx.In
 
-	Repo      iface.SpotOrderRepo
-	TradeRepo iface.TradeOrderRepo
-	CardRepo  iface.CardRepo
-	Conns     *db.Connections
+	Repo  iface.IRepository
+	Conns *db.Connections
 	// RedisConns redis.Redis
 }
 
@@ -51,16 +48,23 @@ func New(p Params) (iface.MatchingUsecase, error) {
 		repo: p.Repo,
 		db:   p.Conns.WriteDB,
 		// locker:    redislock.New(p.RedisConns),
-		tradeRepo:     p.TradeRepo,
-		cardRepo:      p.CardRepo,
 		sellOrder:     make(map[uint64]*rbt.Tree),
 		buyOrder:      make(map[uint64]*rbt.Tree),
 		buyOrderLock:  &sync.RWMutex{},
 		sellOrderLock: &sync.RWMutex{},
 	}
 	ctx := log.Logger.WithContext(context.Background())
-	cards, _, err := s.cardRepo.ListCards(ctx, nil, option.CardWhereOption{})
-	if err != nil {
+	var (
+		cards []model.Card
+		sos   []model.SpotOrder
+	)
+
+	// TODO 需要解決多台部署 或者 rolling Update 遺失掛單簿
+	if _, err := s.repo.List(ctx, nil, &cards, &option.CardWhereOption{
+		Pagination: common.Pagination{
+			WithoutCount: true,
+		},
+	}); err != nil {
 		return nil, err
 	}
 	for i := range cards {
@@ -68,8 +72,11 @@ func New(p Params) (iface.MatchingUsecase, error) {
 		s.buyOrder[cards[i].ID] = rbt.NewWith(model.DecimalDESCComparator)
 	}
 
-	sos, err := p.Repo.ListSpotOrdersWithLock(ctx)
-	if err != nil {
+	if _, err := s.repo.List(ctx, nil, &sos, &option.SpotOrderWhereOption{
+		Pagination: common.Pagination{
+			WithoutCount: true,
+		},
+	}); err != nil {
 		return nil, err
 	}
 

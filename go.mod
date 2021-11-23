@@ -6,8 +6,6 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emirpasic/gods v1.12.0
-	github.com/gogo/protobuf v1.3.2
-	github.com/golang/protobuf v1.5.2
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/ory/dockertest/v3 v3.8.0
 	github.com/pressly/goose v2.7.0+incompatible

@@ -1,19 +1,36 @@
 package repository
 
 import (
-	"pokemon/pkg/repository/card"
-	"pokemon/pkg/repository/identity_account"
-	"pokemon/pkg/repository/spot_order"
-	"pokemon/pkg/repository/trade_order"
-	"pokemon/pkg/repository/user"
+	"pokemon/pkg/iface"
 
+	"gitlab.com/howmay/gopher/db"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
+
+type repository struct {
+	*db.Connections
+}
 
 var Module = fx.Options(
-	identity_account.Module,
-	card.Module,
-	spot_order.Module,
-	user.Module,
-	trade_order.Module,
+	fx.Provide(
+		New,
+	),
 )
+
+type Params struct {
+	fx.In
+
+	DBConns   *db.Connections
+}
+
+func New(p Params) (iface.IRepository, error) {
+	repo := &repository{
+		Connections: p.DBConns,
+	}
+	return repo, nil
+}
+
+func (repo *repository) GetDB() *gorm.DB {
+	return repo.Connections.WriteDB
+}

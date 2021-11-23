@@ -1,9 +1,10 @@
 package option
 
 import (
-	"pokemon/internal/common"
 	"pokemon/pkg/model"
+	"reflect"
 
+	"gitlab.com/howmay/gopher/common"
 	"gorm.io/gorm"
 )
 
@@ -20,15 +21,32 @@ func (where *UserWhereOption) Where(db *gorm.DB) *gorm.DB {
 	return db
 }
 
-type UserUpdateOption struct {
-	WhereOpts UserWhereOption
-	UpdateCol UserUpdateColumn
+func (where *UserWhereOption) Page(db *gorm.DB) *gorm.DB {
+	return where.Pagination.LimitAndOffset(db)
+}
+
+func (where *UserWhereOption) Sort(db *gorm.DB) *gorm.DB {
+	return where.Sorting.Sort(db)
+}
+
+func (where *UserWhereOption) IsEmptyWhereOpt() bool {
+	return reflect.DeepEqual(where.User, model.User{})
+}
+
+func (where *UserWhereOption) TableName() string {
+	return where.User.TableName()
+}
+
+func (where *UserWhereOption) Preload(db *gorm.DB) *gorm.DB {
+	return db
+}
+
+func (where *UserWhereOption) WithoutCount() bool {
+	return where.Pagination.WithoutCount
 }
 
 type UserUpdateColumn struct{}
 
-func (opts *UserUpdateOption) Update(db *gorm.DB) *gorm.DB {
-	db = db.Scopes(opts.WhereOpts.Where)
-	db = db.Updates(opts.UpdateCol)
-	return db
+func (cols *UserUpdateColumn) Columns() interface{} {
+	return cols
 }

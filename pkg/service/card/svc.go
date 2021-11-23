@@ -10,7 +10,7 @@ import (
 
 // service ...
 type service struct {
-	repo iface.CardRepo
+	repo iface.IRepository
 
 	tx *gorm.DB
 }
@@ -18,8 +18,8 @@ type service struct {
 type Params struct {
 	fx.In
 
-	CardRepo iface.CardRepo
-	Conns    *db.Connections
+	iface.IRepository
+	Conns *db.Connections
 }
 
 var Module = fx.Options(
@@ -30,7 +30,7 @@ var Module = fx.Options(
 
 func New(p Params) iface.CardService {
 	return &service{
-		repo: p.CardRepo,
+		repo: p.IRepository,
 		tx:   p.Conns.WriteDB,
 	}
 }

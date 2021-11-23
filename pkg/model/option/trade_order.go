@@ -1,9 +1,10 @@
 package option
 
 import (
-	"pokemon/internal/common"
 	"pokemon/pkg/model"
+	"reflect"
 
+	"gitlab.com/howmay/gopher/common"
 	"gorm.io/gorm"
 )
 
@@ -25,16 +26,32 @@ func (where *TradeOrderWhereOption) Where(db *gorm.DB) *gorm.DB {
 	return db
 }
 
-type TradeOrderUpdateOption struct {
-	WhereOpts TradeOrderWhereOption
-	UpdateCol TradeOrderUpdateColumn
+func (where *TradeOrderWhereOption) Page(db *gorm.DB) *gorm.DB {
+	return where.Pagination.LimitAndOffset(db)
+}
+
+func (where *TradeOrderWhereOption) Sort(db *gorm.DB) *gorm.DB {
+	return where.Sorting.Sort(db)
+}
+
+func (where *TradeOrderWhereOption) IsEmptyWhereOpt() bool {
+	return reflect.DeepEqual(where.TradeOrder, model.TradeOrder{})
+}
+
+func (where *TradeOrderWhereOption) TableName() string {
+	return where.TradeOrder.TableName()
+}
+
+func (where *TradeOrderWhereOption) Preload(db *gorm.DB) *gorm.DB {
+	return db
+}
+
+func (where *TradeOrderWhereOption) WithoutCount() bool {
+	return where.Pagination.WithoutCount
 }
 
 type TradeOrderUpdateColumn struct{}
 
-func (opts *TradeOrderUpdateOption) Update(db *gorm.DB) *gorm.DB {
-	db = db.Scopes(opts.WhereOpts.Where)
-	db = db.Updates(opts.UpdateCol)
-
-	return db
+func (cols *TradeOrderUpdateColumn) Columns() interface{} {
+	return cols
 }
