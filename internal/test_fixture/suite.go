@@ -84,7 +84,7 @@ func Initialize(fxOption ...fx.Option) error {
 			Type:         db.Postgres,
 			DBName:       databaseName,
 			Debug:        false,
-			SearchPath:   "pokemon",
+			// SearchPath:   "pokemon",
 			MaxOpenConns: 400,
 			MaxIdleConns: 200,
 		}
@@ -124,7 +124,7 @@ func Initialize(fxOption ...fx.Option) error {
 			db.InitDatabases,
 			redis.InitRedisClient,
 		),
-		fx.Invoke(zlog.Init),
+		fx.Invoke(zlog.New),
 		fx.Invoke(Migration),
 	}
 

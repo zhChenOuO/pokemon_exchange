@@ -1,7 +1,7 @@
 p=$(shell pwd)
 
 test.unit.service:
-	PROJ_DIR=$p go test -count=1 -mod=vendor -v ./pkg/service
+	PROJ_DIR=$p LOCAL_TEST=1 go test -count=1 -mod=vendor -v ./pkg/service
 
 test.all:
 	test.unit.service
