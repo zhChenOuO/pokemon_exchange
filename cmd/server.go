@@ -17,6 +17,7 @@ import (
 	cobra "github.com/spf13/cobra"
 	"gitlab.com/howmay/gopher/db"
 	"gitlab.com/howmay/gopher/echo"
+	"gitlab.com/howmay/gopher/helper"
 	"gitlab.com/howmay/gopher/redis"
 	"gitlab.com/howmay/gopher/zlog"
 	fx "go.uber.org/fx"
@@ -36,8 +37,8 @@ var Module = fx.Options(
 	),
 )
 
-func run(_ *cobra.Command, _ []string) {
-	defer cmdRecover()
+func run(command *cobra.Command, _ []string) {
+	defer helper.Recover(command.Context())
 
 	config, err := configuration.New()
 	if err != nil {

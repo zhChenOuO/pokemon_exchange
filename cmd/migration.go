@@ -7,6 +7,7 @@ import (
 
 	log "github.com/rs/zerolog/log"
 	cobra "github.com/spf13/cobra"
+	"gitlab.com/howmay/gopher/helper"
 	"gitlab.com/howmay/gopher/zlog"
 )
 
@@ -16,8 +17,8 @@ var MigrationCmd = &cobra.Command{
 	Use: "migration",
 }
 
-func migrationRun(_ *cobra.Command, _ []string) {
-	defer cmdRecover()
+func migrationRun(command *cobra.Command, _ []string) {
+	defer helper.Recover(command.Context())
 
 	config, err := configuration.New()
 	if err != nil {

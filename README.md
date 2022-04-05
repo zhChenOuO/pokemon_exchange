@@ -1,3 +1,34 @@
+## project layout
+```shell
+├── cmd                    application
+├── configuration          服務有哪些控制項
+├── deployment             服務部署資訊包括 Config file 和 dockerfile 但目前沒有在使用
+├── docker-compose.yml     本地需要的一些服務
+├── docs                   文件擺放地方 ( swagger or graphql 文件)
+│   └── graph              GraphQL 如果要更改 schema 會到這個資料夾更改 然後 make gen.graphql
+│       └── schema
+│           ├── app
+│           └── platform
+├── internal               一些各種第三方元件的包裝
+├── makefile               基本上所有操作指令都會使用 makefile
+├── pkg                    服務有的模組
+│   ├── converter          轉換模組 兩方的結構皆不存在 pkg 底下, 拆開後以後獨立出去會較簡單
+│   │   └── auth.go
+│   ├── delivery           傳輸層, 可分為 gRPC, RESTful, GraphQL, Worker or Consumer
+│   │   ├── graph
+│   │   ├── grpc
+│   │   ├── redis_worker
+│   │   └── restful
+│   ├── iface              抽象 handler, service, repository
+│   ├── model              對應 database 的資料結構
+│   │   ├── dto            database 的資料結構
+│   │   ├── option         操作 database 各種 查詢, 更新的資料結構
+│   ├── service            各種商業邏輯會放在這下面, 後續資料夾可能會依照 domain 做區分
+│   └── repository         針對 database, redis 的存取使用進行的分層 
+├── platform_gqlgen.yml    產生 graphql 的設定檔文件
+└── test                   測試需要用到的文件可能都會擺在這底下
+```
+
 ## k6 test
 system mackbook air 
 Apple M1
